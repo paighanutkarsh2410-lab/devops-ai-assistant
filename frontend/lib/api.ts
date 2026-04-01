@@ -49,3 +49,21 @@ export const incidentsAPI = {
   delete: (id: string) =>
     api.delete(`/incidents/${id}`),
 };
+
+// Metrics API
+export const metricsAPI = {
+  getAll: (params?: { service_name?: string; metric_name?: string; hours?: number; limit?: number }) =>
+    api.get('/metrics/', { params }),
+
+  getAggregations: (params: { service_name: string; metric_name: string; hours?: number }) =>
+    api.get('/metrics/aggregations', { params }),
+};
+
+// Alerts API
+export const alertsAPI = {
+  getAll: (params?: { acknowledged?: boolean; resolved?: boolean; severity?: string; limit?: number }) =>
+    api.get('/alerts/', { params }),
+
+  update: (id: string, data: { acknowledged?: boolean; resolved?: boolean }) =>
+    api.patch(`/alerts/${id}`, data),
+};
