@@ -6,6 +6,8 @@ from routes.metrics import router as metrics_router
 from routes.alerts import router as alerts_router
 from routes.logs import router as logs_router
 from routes.deployments import router as deployments_router
+from routes.approvals import router as approvals_router
+from routes.audit import router as audit_router
 from websocket.handlers import router as ws_router
 from monitoring.prometheus_exporter import PrometheusMiddleware, metrics_endpoint
 from monitoring.metric_generator import start_metric_generator
@@ -31,6 +33,8 @@ app.include_router(metrics_router)
 app.include_router(alerts_router)
 app.include_router(logs_router)
 app.include_router(deployments_router)
+app.include_router(approvals_router)
+app.include_router(audit_router)
 app.include_router(ws_router)
 
 # Prometheus metrics endpoint

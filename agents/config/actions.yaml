@@ -1,0 +1,43 @@
+# Action Library Configuration
+# Customize behavior of each remediation action
+
+restart_service:
+  enabled: true
+  risk_level: LOW
+  max_retries: 2
+  timeout_seconds: 60
+
+scale_service:
+  enabled: true
+  risk_level: MEDIUM
+  max_replicas: 10
+  timeout_seconds: 120
+
+rollback_deployment:
+  enabled: true
+  risk_level: MEDIUM
+  requires_approval: true
+  timeout_seconds: 180
+
+clear_cache:
+  enabled: true
+  risk_level: LOW
+  timeout_seconds: 10
+
+increase_resources:
+  enabled: true
+  risk_level: MEDIUM
+  max_increase_percent: 100
+  requires_approval: true
+
+kill_process:
+  enabled: true
+  risk_level: HIGH
+  requires_approval: true
+  timeout_seconds: 15
+
+adjust_rate_limit:
+  enabled: true
+  risk_level: LOW
+  default_duration_minutes: 30
+  timeout_seconds: 5

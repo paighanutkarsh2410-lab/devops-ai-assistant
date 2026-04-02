@@ -83,6 +83,36 @@ export const deploymentsAPI = {
     api.post('/deployments/', data),
 };
 
+// Approvals API
+export const approvalsAPI = {
+  getAll: (params?: { status?: string; limit?: number }) =>
+    api.get('/approvals/', { params }),
+
+  getOne: (id: string) =>
+    api.get(`/approvals/${id}`),
+
+  approve: (id: string) =>
+    api.post(`/approvals/${id}/approve`, {}),
+
+  reject: (id: string) =>
+    api.post(`/approvals/${id}/reject`, {}),
+};
+
+// Audit API
+export const auditAPI = {
+  getActions: (params?: { status?: string; action_name?: string; limit?: number; skip?: number }) =>
+    api.get('/audit/actions', { params }),
+
+  getAction: (id: string) =>
+    api.get(`/audit/actions/${id}`),
+
+  getIncidentActions: (incidentId: string) =>
+    api.get(`/audit/incidents/${incidentId}/actions`),
+
+  getStats: () =>
+    api.get('/audit/stats'),
+};
+
 // Alerts API
 export const alertsAPI = {
   getAll: (params?: { acknowledged?: boolean; resolved?: boolean; severity?: string; limit?: number }) =>

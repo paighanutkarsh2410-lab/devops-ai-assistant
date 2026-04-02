@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { authAPI, incidentsAPI } from '@/lib/api';
 import LiveMetrics from '@/components/LiveMetrics';
 import IncidentDetail from '@/components/IncidentDetail';
+import ActionLog from '@/components/ActionLog';
 
 interface User {
   id: string;
@@ -34,7 +35,7 @@ export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'metrics'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'metrics' | 'remediations'>('overview');
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
 
   useEffect(() => {
@@ -140,10 +141,26 @@ export default function DashboardPage() {
           >
             Live Metrics
           </button>
+          <button
+            onClick={() => setActiveTab('remediations')}
+            className={`px-4 py-2 rounded-lg font-medium ${
+              activeTab === 'remediations' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            Remediations
+          </button>
+          <button
+            onClick={() => router.push('/audit')}
+            className="px-4 py-2 rounded-lg font-medium bg-white text-gray-700 hover:bg-gray-100"
+          >
+            Audit Log
+          </button>
         </div>
 
         {/* Tab Content */}
-        {activeTab === 'overview' ? (
+        {activeTab === 'remediations' ? (
+          <ActionLog />
+        ) : activeTab === 'overview' ? (
           <div className="bg-white rounded-lg shadow">
             <div className="px-6 py-4 border-b">
               <h2 className="text-xl font-semibold">Recent Incidents</h2>

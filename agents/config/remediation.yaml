@@ -1,0 +1,43 @@
+# Remediation Agent Configuration
+# Controls automated incident remediation behavior
+
+auto_remediation_enabled: true
+
+# Risk levels allowed for automatic execution (without human approval)
+allowed_risk_levels:
+  - LOW
+  - MEDIUM
+
+# Maximum retry attempts per incident
+max_retries_per_incident: 3
+
+# Maximum service restarts per hour
+max_restarts_per_hour: 3
+
+# Verification timeout after action (seconds)
+verification_timeout_seconds: 300
+
+# Approval timeout (minutes)
+approval_timeout_minutes: 30
+
+# Services excluded from auto-remediation (always need human)
+excluded_services: []
+
+# Services that always require approval
+approval_required_services:
+  - payment-api
+  - database-primary
+
+# Actions that always require approval
+approval_required_actions:
+  - kill_process
+  - rollback_deployment
+  - increase_resources
+
+# Blackout windows (no auto-remediation during these times)
+# Times are in UTC
+blackout_windows: []
+  # Example:
+  # - start: "09:00"
+  #   end: "17:00"
+  #   days: ["monday", "tuesday", "wednesday", "thursday", "friday"]

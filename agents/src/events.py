@@ -17,7 +17,12 @@ INCIDENT_CREATED = "incident_created"
 DIAGNOSIS_STARTED = "diagnosis_started"
 DIAGNOSIS_COMPLETE = "diagnosis_complete"
 REMEDIATION_STARTED = "remediation_started"
+ACTION_EXECUTED = "action_executed"
+ACTION_ROLLED_BACK = "action_rolled_back"
+APPROVAL_REQUESTED = "approval_requested"
+APPROVAL_GRANTED = "approval_granted"
 REMEDIATION_COMPLETE = "remediation_complete"
+VERIFICATION_COMPLETE = "verification_complete"
 
 CHANNEL = "devops_agent_events"
 

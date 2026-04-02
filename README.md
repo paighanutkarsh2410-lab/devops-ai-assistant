@@ -78,8 +78,8 @@ npm run dev
 - [x] Day 2: Database schema, Auth (JWT), API endpoints, Dashboard UI
 - [x] Day 3: Prometheus monitoring, Anomaly detection (z-score, moving avg, threshold), WebSocket alerts, Alert dashboard
 - [x] Day 4: Diagnostic Agent with Claude AI, Correlation Engine, Knowledge Base, Timeline, Log/Deployment APIs
-- [ ] Day 5: Advanced alerting, notification channels
-- [ ] Day 6: Kubernetes integration, auto-remediation
+- [x] Day 5: Remediation Agent with safe execution, Docker/K8s integration, approval workflow, audit logging
+- [ ] Day 6: Advanced notifications, Slack integration, alert routing
 - [ ] Day 7: Final testing, deployment, UI overhaul
 
 ## Day 4: Diagnostic Agent
@@ -94,3 +94,27 @@ The AI-powered diagnostic system automatically investigates incidents:
 - **Log & Deployment Tracking** — Full CRUD APIs for operational context
 
 See [docs/DIAGNOSTIC_AGENT.md](docs/DIAGNOSTIC_AGENT.md) for architecture details.
+
+## Day 5: Remediation Agent
+
+Automated incident remediation with safety-first design:
+
+- **Safe Execution Framework** — Checkpoints, auto-rollback, circuit breaker
+- **Action Library** — 7 actions: restart, scale, rollback, cache clear, resource increase, kill process, rate limit
+- **Docker & Kubernetes Integration** — Container management and pod orchestration
+- **Strategy Engine** — Multi-step remediation plans for memory leaks, CPU spikes, timeouts, etc.
+- **Approval Workflow** — Human-in-the-loop for HIGH risk actions
+- **Impact Monitoring** — Before/after metric comparison with auto-rollback
+- **Audit Trail** — Complete logging of every action taken
+- **Full Pipeline** — Monitor → Diagnose → Remediate (all 3 agents)
+
+See [docs/REMEDIATION_AGENT.md](docs/REMEDIATION_AGENT.md) and [docs/SAFETY_FRAMEWORK.md](docs/SAFETY_FRAMEWORK.md) for details.
+
+### Safety Warnings
+
+```
+Start with DRY RUN mode: python src/main.py --dry-run
+Test on non-critical services first
+Keep auto-remediation DISABLED initially
+Require approval for ALL actions at first
+```

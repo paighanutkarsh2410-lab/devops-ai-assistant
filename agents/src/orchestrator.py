@@ -1,24 +1,29 @@
 """
-Agent Orchestrator: Coordinates Monitor Agent -> Diagnostic Agent workflow.
+Agent Orchestrator: Coordinates Monitor → Diagnostic → Remediation pipeline.
 Listens for events via Redis pub/sub and routes to appropriate agents.
 """
 import threading
 import time
 from monitor_agent import MonitorAgent
 from diagnostic_agent import DiagnosticAgent
+from remediation_agent import RemediationAgent
 from events import (
     subscribe_events, publish_event,
-    ANOMALY_DETECTED, INCIDENT_CREATED, DIAGNOSIS_COMPLETE
+    ANOMALY_DETECTED, INCIDENT_CREATED, DIAGNOSIS_COMPLETE,
+    REMEDIATION_STARTED, REMEDIATION_COMPLETE
 )
 from config import CHECK_INTERVAL_SECONDS
 
 
 class AgentOrchestrator:
-    def __init__(self):
+    def __init__(self, dry_run: bool = False):
         self.monitor_agent = MonitorAgent()
         self.diagnostic_agent = DiagnosticAgent()
+        self.remediation_agent = RemediationAgent(dry_run=dry_run)
         self._running = False
         self._threads = []
+        self._auto_remediation = True
+        self._min_confidence = 75  # Min diagnosis confidence to auto-remediate
 
     def start(self):
         """Start all agents and the event listener."""
@@ -28,8 +33,9 @@ class AgentOrchestrator:
         print("[Orchestrator] Authenticating agents...")
         self.monitor_agent.authenticate()
         self.diagnostic_agent.authenticate()
+        self.remediation_agent.authenticate()
 
-        # Start Monitor Agent in background thread
+        # Start Monitor Agent
         monitor_thread = threading.Thread(
             target=self._run_monitor,
             daemon=True,
@@ -38,7 +44,7 @@ class AgentOrchestrator:
         monitor_thread.start()
         self._threads.append(monitor_thread)
 
-        # Start Diagnostic Agent in background thread
+        # Start Diagnostic Agent
         diag_thread = threading.Thread(
             target=self._run_diagnostic,
             daemon=True,
@@ -46,6 +52,15 @@ class AgentOrchestrator:
         )
         diag_thread.start()
         self._threads.append(diag_thread)
+
+        # Start Remediation Agent
+        rem_thread = threading.Thread(
+            target=self._run_remediation,
+            daemon=True,
+            name="RemediationAgent"
+        )
+        rem_thread.start()
+        self._threads.append(rem_thread)
 
         # Start event listener
         event_thread = threading.Thread(
@@ -57,9 +72,11 @@ class AgentOrchestrator:
         self._threads.append(event_thread)
 
         print("[Orchestrator] All agents started")
-        print(f"  Monitor Agent: checking every {CHECK_INTERVAL_SECONDS}s")
-        print(f"  Diagnostic Agent: checking every 60s")
-        print(f"  Event listener: active")
+        print(f"  Monitor Agent:     checking every {CHECK_INTERVAL_SECONDS}s")
+        print(f"  Diagnostic Agent:  checking every 60s")
+        print(f"  Remediation Agent: checking every 90s")
+        print(f"  Auto-remediation:  {'ENABLED' if self._auto_remediation else 'DISABLED'}")
+        print(f"  Event listener:    active")
         print()
 
     def _run_monitor(self):
@@ -86,7 +103,23 @@ class AgentOrchestrator:
                     self.diagnostic_agent.authenticate()
                 except Exception:
                     pass
-            time.sleep(60)  # Check every 60 seconds
+            time.sleep(60)
+
+    def _run_remediation(self):
+        """Run Remediation Agent loop."""
+        while self._running:
+            try:
+                if self._auto_remediation:
+                    self.remediation_agent.tick()
+                else:
+                    print("  [RemAgent] Auto-remediation disabled, skipping")
+            except Exception as e:
+                print(f"[Orchestrator] Remediation error: {e}")
+                try:
+                    self.remediation_agent.authenticate()
+                except Exception:
+                    pass
+            time.sleep(90)
 
     def _listen_events(self):
         """Listen for inter-agent events."""
@@ -99,9 +132,20 @@ class AgentOrchestrator:
         """Route events to appropriate handlers."""
         if event_type == ANOMALY_DETECTED:
             print(f"[Orchestrator] Anomaly detected, triggering diagnostic...")
-            # Diagnostic agent will pick it up on next tick
+
         elif event_type == DIAGNOSIS_COMPLETE:
-            print(f"[Orchestrator] Diagnosis complete for incident {data.get('incident_id')}")
+            inc_id = data.get("incident_id", "")
+            confidence = data.get("confidence", 0)
+            print(f"[Orchestrator] Diagnosis complete for {inc_id} (confidence: {confidence}%)")
+
+            if self._auto_remediation and confidence >= self._min_confidence:
+                print(f"[Orchestrator] Triggering auto-remediation...")
+                publish_event(REMEDIATION_STARTED, {"incident_id": inc_id})
+
+        elif event_type == REMEDIATION_COMPLETE:
+            inc_id = data.get("incident_id", "")
+            success = data.get("success", False)
+            print(f"[Orchestrator] Remediation {'succeeded' if success else 'failed'} for {inc_id}")
 
     def stop(self):
         """Stop all agents gracefully."""
@@ -109,6 +153,7 @@ class AgentOrchestrator:
         self._running = False
         self.monitor_agent.stop()
         self.diagnostic_agent.stop()
+        self.remediation_agent.stop()
 
     def wait(self):
         """Block until interrupted."""
