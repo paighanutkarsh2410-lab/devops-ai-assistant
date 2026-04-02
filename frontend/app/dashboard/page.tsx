@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { authAPI, incidentsAPI } from '@/lib/api';
 import LiveMetrics from '@/components/LiveMetrics';
+import IncidentDetail from '@/components/IncidentDetail';
 
 interface User {
   id: string;
@@ -21,7 +22,10 @@ interface Incident {
   severity: string;
   status: string;
   service_name: string | null;
+  root_cause: string | null;
+  solution: string | null;
   detected_at: string;
+  resolved_at: string | null;
   auto_resolved: boolean;
 }
 
@@ -31,6 +35,7 @@ export default function DashboardPage() {
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'overview' | 'metrics'>('overview');
+  const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
 
   useEffect(() => {
     loadData();
@@ -150,7 +155,7 @@ export default function DashboardPage() {
                 </div>
               ) : (
                 incidents.slice(0, 10).map((incident) => (
-                  <div key={incident.id} className="px-6 py-4 hover:bg-gray-50">
+                  <div key={incident.id} className="px-6 py-4 hover:bg-gray-50 cursor-pointer" onClick={() => setSelectedIncident(incident)}>
                     <div className="flex items-center justify-between">
                       <div>
                         <h3 className="font-medium">{incident.title}</h3>
@@ -172,6 +177,7 @@ export default function DashboardPage() {
                         }`}>
                           {incident.status}
                         </span>
+                        <span className="text-xs text-blue-600">View Details</span>
                       </div>
                     </div>
                   </div>
@@ -183,6 +189,14 @@ export default function DashboardPage() {
           <LiveMetrics />
         )}
       </main>
+
+      {/* Incident Detail Modal */}
+      {selectedIncident && (
+        <IncidentDetail
+          incident={selectedIncident}
+          onClose={() => setSelectedIncident(null)}
+        />
+      )}
     </div>
   );
 }

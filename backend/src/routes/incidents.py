@@ -5,6 +5,9 @@ from models import get_db
 from models.user import User
 from models.incident import Incident
 from schemas.incident import IncidentCreate, IncidentResponse, IncidentUpdate
+from schemas.timeline import TimelineResponse, TimelineEvent
+from services.timeline_service import generate_timeline
+from services.llm_service import generate_timeline_summary
 from utils.auth import get_current_user
 
 router = APIRouter(prefix="/incidents", tags=["incidents"])
@@ -108,6 +111,31 @@ def update_incident(
     db.refresh(incident)
 
     return incident
+
+
+@router.get("/{incident_id}/timeline", response_model=TimelineResponse)
+def get_incident_timeline(
+    incident_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Get chronological timeline of events for an incident."""
+    events = generate_timeline(db, incident_id, current_user.id)
+    if not events:
+        raise HTTPException(status_code=404, detail="Incident not found")
+
+    summary = None
+    if len(events) >= 2:
+        try:
+            summary = generate_timeline_summary(events)
+        except Exception:
+            summary = None
+
+    return TimelineResponse(
+        incident_id=incident_id,
+        events=[TimelineEvent(**e) for e in events],
+        summary=summary
+    )
 
 
 @router.delete("/{incident_id}", status_code=status.HTTP_204_NO_CONTENT)

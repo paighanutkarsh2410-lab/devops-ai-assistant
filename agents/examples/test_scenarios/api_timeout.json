@@ -1,0 +1,20 @@
+{
+  "incident": {
+    "title": "API gateway request timeouts",
+    "description": "50% of requests to api-gateway are timing out",
+    "severity": "critical",
+    "service_name": "api-gateway"
+  },
+  "metrics": [
+    {"service_name": "api-gateway", "metric_name": "response_time", "value": 12500, "unit": "ms"},
+    {"service_name": "api-gateway", "metric_name": "error_rate", "value": 15.3, "unit": "err/min"},
+    {"service_name": "database-primary", "metric_name": "response_time", "value": 8500, "unit": "ms"}
+  ],
+  "logs": [
+    {"level": "ERROR", "message": "Upstream timeout: database-primary did not respond within 10s", "timestamp": "2026-04-01T16:00:00"},
+    {"level": "ERROR", "message": "Connection refused to database-primary:5432", "timestamp": "2026-04-01T16:01:00"},
+    {"level": "WARNING", "message": "Circuit breaker opened for database-primary", "timestamp": "2026-04-01T16:02:00"}
+  ],
+  "deployments": [],
+  "expected_root_cause": "Database primary is slow or unresponsive, causing cascading timeouts"
+}

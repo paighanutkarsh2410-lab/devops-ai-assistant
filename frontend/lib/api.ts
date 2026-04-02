@@ -59,6 +59,30 @@ export const metricsAPI = {
     api.get('/metrics/aggregations', { params }),
 };
 
+// Logs API
+export const logsAPI = {
+  getAll: (params?: { service_name?: string; level?: string; hours?: number }) =>
+    api.get('/logs/', { params }),
+
+  getErrors: (params?: { service_name?: string; hours?: number }) =>
+    api.get('/logs/errors', { params }),
+
+  getPatterns: (params?: { service_name?: string; hours?: number }) =>
+    api.get('/logs/patterns', { params }),
+};
+
+// Deployments API
+export const deploymentsAPI = {
+  getAll: (params?: { service_name?: string }) =>
+    api.get('/deployments/', { params }),
+
+  getRecent: (params?: { hours?: number }) =>
+    api.get('/deployments/recent', { params }),
+
+  create: (data: { service_name: string; version: string; commit_hash?: string; deployed_by?: string; description?: string }) =>
+    api.post('/deployments/', data),
+};
+
 // Alerts API
 export const alertsAPI = {
   getAll: (params?: { acknowledged?: boolean; resolved?: boolean; severity?: string; limit?: number }) =>

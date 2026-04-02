@@ -1,0 +1,22 @@
+{
+  "incident": {
+    "title": "Database query performance degradation",
+    "description": "Average query time increased from 15ms to 2500ms",
+    "severity": "high",
+    "service_name": "database-primary"
+  },
+  "metrics": [
+    {"service_name": "database-primary", "metric_name": "response_time", "value": 2500, "unit": "ms"},
+    {"service_name": "database-primary", "metric_name": "cpu", "value": 88.0, "unit": "%"},
+    {"service_name": "database-primary", "metric_name": "memory", "value": 91.0, "unit": "%"}
+  ],
+  "logs": [
+    {"level": "WARNING", "message": "Slow query detected: SELECT * FROM metrics WHERE... took 4.2s", "timestamp": "2026-04-01T10:00:00"},
+    {"level": "ERROR", "message": "Lock wait timeout exceeded on table incidents", "timestamp": "2026-04-01T10:05:00"},
+    {"level": "WARNING", "message": "Autovacuum running on large table metrics (50M rows)", "timestamp": "2026-04-01T09:50:00"}
+  ],
+  "deployments": [
+    {"service_name": "web-server-01", "version": "2.0.5", "deployed_at": "2026-04-01T09:45:00", "deployed_by": "dev-team", "description": "Added new analytics queries"}
+  ],
+  "expected_root_cause": "New analytics queries from deployment v2.0.5 combined with autovacuum on metrics table"
+}

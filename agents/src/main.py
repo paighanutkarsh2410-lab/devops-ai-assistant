@@ -1,29 +1,23 @@
 """
-Agent Runner: Starts the Monitor Agent.
+Agent Runner: Starts the Orchestrator which manages all agents.
 """
 import sys
 import os
 
-# Add agent src to path
 sys.path.insert(0, os.path.dirname(__file__))
 
-from monitor_agent import MonitorAgent
-from config import CHECK_INTERVAL_SECONDS
+from orchestrator import AgentOrchestrator
 
 
 def main():
     print("=" * 50)
-    print("  DevOps AI Assistant - Monitor Agent")
+    print("  DevOps AI Assistant - Agent System")
     print("=" * 50)
-    print(f"  Check interval: {CHECK_INTERVAL_SECONDS}s")
     print()
 
-    agent = MonitorAgent()
-    try:
-        agent.run(interval=CHECK_INTERVAL_SECONDS)
-    except KeyboardInterrupt:
-        print("\nShutting down Monitor Agent...")
-        agent.stop()
+    orchestrator = AgentOrchestrator()
+    orchestrator.start()
+    orchestrator.wait()
 
 
 if __name__ == "__main__":

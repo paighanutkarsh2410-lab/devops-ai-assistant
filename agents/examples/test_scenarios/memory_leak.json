@@ -1,0 +1,20 @@
+{
+  "incident": {
+    "title": "Memory usage steadily increasing on auth-service",
+    "description": "Memory usage has grown from 40% to 92% over the last 2 hours",
+    "severity": "high",
+    "service_name": "auth-service"
+  },
+  "metrics": [
+    {"service_name": "auth-service", "metric_name": "memory", "value": 92.0, "unit": "%"},
+    {"service_name": "auth-service", "metric_name": "cpu", "value": 45.0, "unit": "%"},
+    {"service_name": "auth-service", "metric_name": "response_time", "value": 350, "unit": "ms"}
+  ],
+  "logs": [
+    {"level": "WARNING", "message": "GC overhead limit exceeded", "timestamp": "2026-04-01T12:00:00"},
+    {"level": "ERROR", "message": "OutOfMemoryError: Java heap space", "timestamp": "2026-04-01T13:30:00"},
+    {"level": "WARNING", "message": "Session cache size exceeded 10000 entries", "timestamp": "2026-04-01T13:45:00"}
+  ],
+  "deployments": [],
+  "expected_root_cause": "Memory leak likely caused by unbounded session cache growth"
+}
