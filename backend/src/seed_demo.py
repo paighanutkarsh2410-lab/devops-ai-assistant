@@ -280,7 +280,7 @@ def seed():
                     VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                 """, (uid(), name, desc, itype, cat, "Community", "1.0.0",
                       dl, rating, random.randint(10, 80), rating >= 4.5,
-                      '{' + ','.join(f'"{t}"' for t in tags.split(',')) + '}'))
+                      '[' + ','.join(f'"{t}"' for t in tags.split(',')) + ']'))
                 mp_count += 1
         print(f"Created {mp_count} marketplace items")
     else:
