@@ -31,10 +31,8 @@ def seed():
         print(f"Using existing user: aidevops@demo.com (id={user_id})")
     else:
         user_id = uid()
-        # Hash password at runtime
-        from passlib.context import CryptContext
-        pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-        hashed = pwd_context.hash("har@2410")
+        # bcrypt hash of "har@2410"
+        hashed = "$2b$12$0DhFt17acDlUnDa194H3duGh2nYZW1urt4VRUnmlG0gf8szUnXype"
         cur.execute("""
             INSERT INTO users (id, email, hashed_password, full_name, company, is_active, created_at)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
