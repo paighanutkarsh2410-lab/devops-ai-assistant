@@ -1,0 +1,100 @@
+# Specialist Agent Configuration
+# Enable/disable individual specialists and configure their behavior
+
+specialists:
+  database:
+    enabled: true
+    max_concurrent: 3
+    triggers:
+      - "slow query"
+      - "deadlock"
+      - "connection pool"
+      - "index"
+      - "database"
+    thresholds:
+      slow_query_ms: 500
+      max_pool_usage_pct: 85
+
+  network:
+    enabled: true
+    max_concurrent: 3
+    triggers:
+      - "latency"
+      - "timeout"
+      - "dns"
+      - "packet loss"
+      - "firewall"
+      - "load balancer"
+    thresholds:
+      latency_warn_ms: 100
+      latency_critical_ms: 500
+      packet_loss_warn_pct: 1.0
+
+  memory:
+    enabled: true
+    max_concurrent: 2
+    triggers:
+      - "memory"
+      - "leak"
+      - "oom"
+      - "heap"
+      - "gc"
+    thresholds:
+      mem_warn_pct: 80
+      mem_critical_pct: 92
+      gc_pressure_pct: 15
+
+  api:
+    enabled: true
+    max_concurrent: 3
+    triggers:
+      - "api"
+      - "rate limit"
+      - "429"
+      - "timeout"
+      - "circuit breaker"
+      - "authentication"
+    thresholds:
+      response_warn_ms: 500
+      error_rate_warn_pct: 2.0
+
+  security:
+    enabled: true
+    max_concurrent: 2
+    triggers:
+      - "security"
+      - "intrusion"
+      - "certificate"
+      - "vulnerability"
+      - "unauthorized"
+      - "compliance"
+    thresholds: {}
+
+  cost:
+    enabled: true
+    max_concurrent: 1
+    triggers:
+      - "cost"
+      - "billing"
+      - "budget"
+      - "expensive"
+      - "scaling"
+    thresholds: {}
+
+  performance:
+    enabled: true
+    max_concurrent: 2
+    triggers:
+      - "performance"
+      - "cpu"
+      - "bottleneck"
+      - "profiling"
+      - "slow"
+      - "degradation"
+    thresholds: {}
+
+# Global settings
+global:
+  max_total_concurrent: 10
+  task_timeout_seconds: 120
+  auto_discovery: true

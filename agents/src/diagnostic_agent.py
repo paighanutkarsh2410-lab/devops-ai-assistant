@@ -14,6 +14,13 @@ from correlation_engine import CorrelationEngine
 from knowledge_base import KnowledgeBase
 from config import BACKEND_URL, ANTHROPIC_API_KEY
 
+# Learning agent integration (optional — gracefully degrades)
+try:
+    from knowledge_base import QdrantKnowledgeBase, generate_incident_embedding
+    LEARNING_AVAILABLE = True
+except ImportError:
+    LEARNING_AVAILABLE = False
+
 
 class DiagnosticAgent(BaseAgent):
     def __init__(self):
@@ -21,6 +28,16 @@ class DiagnosticAgent(BaseAgent):
         self.correlation_engine = CorrelationEngine(self.api_get)
         self.knowledge_base = KnowledgeBase()
         self._processed_ids = set()
+
+        # Vector knowledge base for learned diagnoses
+        self._vector_kb = None
+        self._kb_hits = 0
+        self._kb_misses = 0
+        if LEARNING_AVAILABLE:
+            try:
+                self._vector_kb = QdrantKnowledgeBase()
+            except Exception:
+                pass
 
     def tick(self):
         """Check for new undiagnosed incidents and analyze them."""
@@ -45,12 +62,31 @@ class DiagnosticAgent(BaseAgent):
         inc_id = incident.get("id")
         service = incident.get("service_name", "")
 
-        # Step 1: Gather Context
-        print(f"    Step 1: Gathering context...")
+        # Step 1: Check vector knowledge base (learned diagnoses)
+        print(f"    Step 1: Checking learned knowledge base...")
+        learned = self._check_learned_knowledge(incident)
+        if learned:
+            self._kb_hits += 1
+            print(f"    LEARNED DIAGNOSIS: {learned.get('root_cause', '')[:60]} "
+                  f"(confidence: {learned.get('confidence', 0)}%)")
+            self._update_incident(inc_id, learned)
+            incident["root_cause"] = learned.get("root_cause", "")
+            incident["solution"] = "; ".join(learned.get("recommended_actions", []))
+            self.knowledge_base.store_incident(incident)
+            print(f"    Diagnosis complete (from memory):")
+            print(f"      Root cause: {learned.get('root_cause', 'Unknown')}")
+            print(f"      Confidence: {learned.get('confidence', 0)}%")
+            print(f"      KB hit rate: {self._get_kb_hit_rate():.0f}%")
+            return
+
+        self._kb_misses += 1
+
+        # Step 2: Gather Context
+        print(f"    Step 2: Gathering context...")
         context = self._gather_context(incident)
 
-        # Step 2: Check Knowledge Base
-        print(f"    Step 2: Searching knowledge base...")
+        # Step 3: Check TF-IDF Knowledge Base
+        print(f"    Step 3: Searching knowledge base...")
         similar = self.knowledge_base.search_similar(
             incident.get("title", ""),
             incident.get("description", ""),
@@ -59,28 +95,64 @@ class DiagnosticAgent(BaseAgent):
         if similar and similar[0]["score"] > 0.8:
             print(f"    Found high-confidence match: {similar[0]['title']} (score: {similar[0]['score']:.2f})")
 
-        # Step 3: Run Correlation Engine
-        print(f"    Step 3: Running correlation engine...")
+        # Step 4: Run Correlation Engine
+        print(f"    Step 4: Running correlation engine...")
         correlations = self.correlation_engine.correlate_incident(incident)
         print(f"    Correlations: {correlations.get('likely_cause', 'none')}")
 
-        # Step 4: AI Analysis
-        print(f"    Step 4: Running AI analysis...")
+        # Step 5: AI Analysis
+        print(f"    Step 5: Running AI analysis...")
         analysis = self._run_ai_analysis(incident, context, similar, correlations)
 
-        # Step 5: Update Incident
-        print(f"    Step 5: Updating incident with findings...")
+        # Step 6: Update Incident
+        print(f"    Step 6: Updating incident with findings...")
         self._update_incident(inc_id, analysis)
 
-        # Step 6: Store in knowledge base for future reference
+        # Step 7: Store in knowledge base for future reference
         incident["root_cause"] = analysis.get("root_cause", "")
         incident["solution"] = "; ".join(analysis.get("recommended_actions", []))
         self.knowledge_base.store_incident(incident)
 
-        print(f"    Diagnosis complete:")
+        print(f"    Diagnosis complete (via LLM):")
         print(f"      Root cause: {analysis.get('root_cause', 'Unknown')}")
         print(f"      Confidence: {analysis.get('confidence', 0)}%")
         print(f"      Actions: {analysis.get('recommended_actions', [])}")
+        print(f"      KB hit rate: {self._get_kb_hit_rate():.0f}%")
+
+    def _check_learned_knowledge(self, incident: dict) -> dict:
+        """Check vector KB for a high-confidence learned diagnosis."""
+        if not self._vector_kb or not LEARNING_AVAILABLE:
+            return {}
+
+        try:
+            embedding = generate_incident_embedding(incident)
+            similar = self._vector_kb.search_similar(
+                query_embedding=embedding,
+                top_k=3,
+                min_score=0.85,
+            )
+            if similar and similar[0].get("success", False):
+                best = similar[0]
+                root_cause = best.get("root_cause", "")
+                solution = best.get("solution", "")
+                if root_cause:
+                    return {
+                        "root_cause": root_cause,
+                        "confidence": int(best.get("score", 0.85) * 100),
+                        "reasoning": f"Learned from similar past incident (similarity: {best.get('score', 0):.2f})",
+                        "recommended_actions": [solution] if solution else ["Review past resolution"],
+                        "severity_assessment": incident.get("severity", "medium"),
+                        "similar_pattern": best.get("title", ""),
+                        "source": "learned_diagnosis",
+                    }
+        except Exception as e:
+            print(f"    [WARN] Vector KB search failed: {e}")
+        return {}
+
+    def _get_kb_hit_rate(self) -> float:
+        """Calculate knowledge base hit rate."""
+        total = self._kb_hits + self._kb_misses
+        return (self._kb_hits / total * 100) if total > 0 else 0
 
     def _gather_context(self, incident: dict) -> dict:
         """Gather all contextual data for analysis."""

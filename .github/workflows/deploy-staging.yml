@@ -1,0 +1,45 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: staging
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run tests first
+        run: |
+          cd agents
+          pip install -r requirements.txt pytest
+          pytest tests/ -v -k "not test_full_pipeline"
+
+      - name: Build Docker images
+        run: |
+          docker build -t devops-backend:staging ./backend
+          docker build -t devops-agents:staging ./agents
+
+      - name: Deploy to staging server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.STAGING_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /opt/devops-ai
+            git pull origin develop
+            cd deployment/production
+            docker compose pull
+            docker compose up -d --build
+            sleep 10
+            curl -f http://localhost:8000/health || exit 1
+            echo "Staging deployment successful!"

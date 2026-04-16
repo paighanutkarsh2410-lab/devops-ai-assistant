@@ -1,18 +1,22 @@
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 WORKDIR /app
 
-# Install dependencies
+# Install system deps
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl gcc && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Python deps
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy agent source
+# Copy source
 COPY src/ ./src/
-COPY examples/ ./examples/
-
-# Copy backend services (needed for LLM service import)
-COPY ../backend/src/services/ ./backend_services/
+COPY config/ ./config/
 
 ENV PYTHONUNBUFFERED=1
 
-CMD ["python", "src/main.py"]
+WORKDIR /app/src
+
+CMD ["python", "orchestrator.py"]

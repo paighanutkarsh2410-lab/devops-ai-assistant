@@ -5,7 +5,7 @@ Prevents runaway automation and protects critical services.
 import os
 import yaml
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Tuple
 
 logger = logging.getLogger(__name__)
@@ -108,16 +108,16 @@ class SafetyRules:
         self._action_history.append({
             "action": action_name,
             "service": service,
-            "timestamp": datetime.utcnow(),
+            "timestamp": datetime.now(timezone.utc),
             "success": success,
         })
         # Prune old entries (keep last 24h)
-        cutoff = datetime.utcnow() - timedelta(hours=24)
+        cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
         self._action_history = [a for a in self._action_history if a["timestamp"] > cutoff]
 
     def _count_recent_actions(self, action_pattern: str, service: str, hours: float) -> int:
         """Count matching actions within the time window."""
-        cutoff = datetime.utcnow() - timedelta(hours=hours)
+        cutoff = datetime.now(timezone.utc) - timedelta(hours=hours)
         return sum(
             1 for a in self._action_history
             if action_pattern.lower() in a["action"].lower()
@@ -131,7 +131,7 @@ class SafetyRules:
         if not windows:
             return False
 
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         for window in windows:
             try:
                 start_h, start_m = map(int, window.get("start", "0:0").split(":"))

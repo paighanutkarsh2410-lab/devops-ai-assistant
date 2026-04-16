@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
+import { colors } from '@/lib/theme';
+import DashboardShell from '@/components/DashboardShell';
 import ActionLog from '@/components/ActionLog';
 import ApprovalCard from '@/components/ApprovalCard';
 
@@ -38,10 +40,7 @@ export default function AuditPage() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (!token) {
-      router.push('/login');
-      return;
-    }
+    if (!token) { router.push('/login'); return; }
     loadData();
   }, []);
 
@@ -60,93 +59,89 @@ export default function AuditPage() {
 
   const pendingCount = approvals.filter(a => a.status === 'pending').length;
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Audit & Approvals</h1>
-          <button
-            onClick={() => router.push('/dashboard')}
-            className="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
-          >
-            Back to Dashboard
-          </button>
-        </div>
-      </header>
+  const statItems = stats ? [
+    { label: 'Total Actions', value: stats.total_actions, color: colors.accent, icon: '📋' },
+    { label: 'Success Rate', value: `${stats.success_rate}%`, color: colors.success, icon: '✅' },
+    { label: 'Failures', value: stats.failure_count, color: colors.danger, icon: '❌' },
+    { label: 'Rollbacks', value: stats.rollback_count, color: colors.warning, icon: '🔄' },
+    { label: 'Avg Duration', value: `${stats.avg_duration}s`, color: '#8b5cf6', icon: '⏱️' },
+  ] : [];
 
-      <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+  return (
+    <DashboardShell>
+      <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
+        <div className="slide-up" style={{ marginBottom: 28 }}>
+          <h1 style={{ fontSize: 26, fontWeight: 800, background: 'linear-gradient(135deg, #f0f0f0, #f59e0b)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Audit & Approvals</h1>
+          <p style={{ fontSize: 13, color: colors.textMuted }}>Action history, approval workflows, and compliance tracking</p>
+        </div>
+
         {/* Stats */}
         {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
-            <div className="bg-white p-4 rounded-lg shadow">
-              <div className="text-sm text-gray-500">Total Actions</div>
-              <div className="text-2xl font-bold">{stats.total_actions}</div>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow">
-              <div className="text-sm text-gray-500">Success Rate</div>
-              <div className="text-2xl font-bold text-green-600">{stats.success_rate}%</div>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow">
-              <div className="text-sm text-gray-500">Failures</div>
-              <div className="text-2xl font-bold text-red-600">{stats.failure_count}</div>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow">
-              <div className="text-sm text-gray-500">Rollbacks</div>
-              <div className="text-2xl font-bold text-orange-600">{stats.rollback_count}</div>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow">
-              <div className="text-sm text-gray-500">Avg Duration</div>
-              <div className="text-2xl font-bold">{stats.avg_duration}s</div>
-            </div>
+          <div className="slide-up-d1" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 14, marginBottom: 24 }}>
+            {statItems.map(s => (
+              <div key={s.label} style={{
+                background: colors.bgCard, border: `1px solid ${colors.border}`,
+                borderRadius: 14, padding: 18, borderTop: `2px solid ${s.color}`,
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div>
+                    <div style={{ fontSize: 11, color: colors.textMuted, marginBottom: 6 }}>{s.label}</div>
+                    <div style={{ fontSize: 26, fontWeight: 700, color: s.color }}>{s.value}</div>
+                  </div>
+                  <span style={{ fontSize: 20 }}>{s.icon}</span>
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
         {/* Tabs */}
-        <div className="flex gap-4 mb-6">
-          <button
-            onClick={() => setActiveTab('actions')}
-            className={`px-4 py-2 rounded-lg font-medium ${
-              activeTab === 'actions' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            Action Log
-          </button>
-          <button
-            onClick={() => setActiveTab('approvals')}
-            className={`px-4 py-2 rounded-lg font-medium relative ${
-              activeTab === 'approvals' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            Approvals
-            {pendingCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                {pendingCount}
-              </span>
-            )}
-          </button>
+        <div style={{
+          display: 'flex', gap: 4, marginBottom: 24, padding: 4,
+          background: 'rgba(255,255,255,0.02)', borderRadius: 10,
+          border: `1px solid ${colors.border}`, width: 'fit-content',
+        }}>
+          {(['actions', 'approvals'] as const).map(tab => (
+            <button key={tab} onClick={() => setActiveTab(tab)} style={{
+              padding: '8px 18px', borderRadius: 8, border: 'none',
+              background: activeTab === tab ? colors.accentGradient : 'transparent',
+              color: activeTab === tab ? '#fff' : colors.textMuted,
+              cursor: 'pointer', fontSize: 13, fontWeight: activeTab === tab ? 600 : 400,
+              position: 'relative',
+            }}>
+              {tab === 'actions' ? 'Action Log' : 'Approvals'}
+              {tab === 'approvals' && pendingCount > 0 && (
+                <span style={{
+                  position: 'absolute', top: -4, right: -4,
+                  width: 18, height: 18, borderRadius: '50%',
+                  background: colors.danger, color: '#fff',
+                  fontSize: 10, fontWeight: 700,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>{pendingCount}</span>
+              )}
+            </button>
+          ))}
         </div>
 
-        {/* Tab Content */}
         {activeTab === 'actions' ? (
           <ActionLog />
         ) : (
-          <div className="space-y-4">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {approvals.length === 0 ? (
-              <div className="bg-white rounded-lg shadow px-6 py-8 text-center text-gray-500">
+              <div style={{
+                background: colors.bgCard, border: `1px solid ${colors.border}`,
+                borderRadius: 14, padding: 48, textAlign: 'center', color: colors.textMuted,
+              }}>
                 No approval requests yet.
               </div>
             ) : (
               approvals.map((approval) => (
-                <ApprovalCard
-                  key={approval.id}
-                  approval={approval}
-                  onAction={loadData}
-                />
+                <ApprovalCard key={approval.id} approval={approval} onAction={loadData} />
               ))
             )}
           </div>
         )}
-      </main>
-    </div>
+      </div>
+    </DashboardShell>
   );
 }

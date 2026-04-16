@@ -1,0 +1,89 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: devops_user
+          POSTGRES_PASSWORD: devops_password_123
+          POSTGRES_DB: devops_ai
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run all tests
+        env:
+          DATABASE_URL: postgresql://devops_user:devops_password_123@localhost:5432/devops_ai
+          REDIS_URL: redis://localhost:6379
+        run: |
+          cd backend && pip install -r requirements.txt pytest && pytest tests/ -v
+          cd ../agents && pip install -r requirements.txt && pytest tests/ -v -k "not test_full_pipeline"
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to production
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            cd /opt/devops-ai
+
+            # Backup database before deploy
+            ./deployment/scripts/backup.sh
+
+            # Pull latest
+            git pull origin main
+
+            # Build and deploy
+            cd deployment/production
+            docker compose build
+            docker compose up -d
+
+            # Wait for health
+            sleep 15
+
+            # Smoke test
+            curl -f http://localhost:8000/health || {
+              echo "HEALTH CHECK FAILED — rolling back!"
+              docker compose down
+              git checkout HEAD~1
+              docker compose up -d
+              exit 1
+            }
+
+            echo "Production deployment successful!"

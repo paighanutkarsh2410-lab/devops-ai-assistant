@@ -1,0 +1,23 @@
+{
+  "extends": [
+    "next/core-web-vitals"
+  ],
+  "rules": {
+    "no-console": "warn",
+    "react-hooks/exhaustive-deps": "warn",
+    "prefer-const": "error",
+    "no-var": "error",
+    "no-unused-expressions": "error",
+    "eqeqeq": ["error", "always"],
+    "no-eval": "error",
+    "no-implied-eval": "error"
+  },
+  "overrides": [
+    {
+      "files": ["tests/**/*"],
+      "rules": {
+        "no-console": "off"
+      }
+    }
+  ]
+}

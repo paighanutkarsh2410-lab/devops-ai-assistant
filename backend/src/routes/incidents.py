@@ -9,6 +9,7 @@ from schemas.timeline import TimelineResponse, TimelineEvent
 from services.timeline_service import generate_timeline
 from services.llm_service import generate_timeline_summary
 from utils.auth import get_current_user
+from services.search_service import SearchService
 
 router = APIRouter(prefix="/incidents", tags=["incidents"])
 
@@ -136,6 +137,73 @@ def get_incident_timeline(
         events=[TimelineEvent(**e) for e in events],
         summary=summary
     )
+
+
+@router.get("/search/results")
+def search_incidents(
+    q: Optional[str] = None,
+    status_filter: Optional[str] = Query(None, alias="status"),
+    severity: Optional[str] = None,
+    service_name: Optional[str] = None,
+    date_from: Optional[str] = None,
+    date_to: Optional[str] = None,
+    auto_resolved: Optional[bool] = None,
+    sort_by: str = "detected_at",
+    skip: int = 0,
+    limit: int = 50,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Advanced search with full-text and filters."""
+    from datetime import datetime as dt
+    svc = SearchService(db)
+    result = svc.search_incidents(
+        user_id=str(current_user.id),
+        query=q,
+        status=status_filter.split(",") if status_filter else None,
+        severity=severity.split(",") if severity else None,
+        service_name=service_name,
+        date_from=dt.fromisoformat(date_from) if date_from else None,
+        date_to=dt.fromisoformat(date_to) if date_to else None,
+        auto_resolved=auto_resolved,
+        sort_by=sort_by,
+        skip=skip,
+        limit=limit,
+    )
+    return {
+        "results": [IncidentResponse.model_validate(i) for i in result["results"]],
+        "total": result["total"],
+        "has_more": result["has_more"],
+    }
+
+
+@router.get("/search/suggestions")
+def search_suggestions(
+    q: str = "",
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Autocomplete suggestions for search."""
+    svc = SearchService(db)
+    return svc.get_search_suggestions(str(current_user.id), q)
+
+
+@router.get("/export")
+def export_incidents(
+    format: str = "json",
+    status_filter: Optional[str] = Query(None, alias="status"),
+    severity: Optional[str] = None,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Export incidents as JSON (CSV available via frontend)."""
+    svc = SearchService(db)
+    data = svc.export_incidents(
+        user_id=str(current_user.id),
+        status=status_filter.split(",") if status_filter else None,
+        severity=severity.split(",") if severity else None,
+    )
+    return {"format": format, "count": len(data), "data": data}
 
 
 @router.delete("/{incident_id}", status_code=status.HTTP_204_NO_CONTENT)

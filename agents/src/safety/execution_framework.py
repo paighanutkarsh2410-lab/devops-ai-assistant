@@ -4,7 +4,7 @@ Creates checkpoints before action, auto-rolls back if metrics worsen.
 """
 import time
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from .safety_rules import SafetyRules
@@ -24,7 +24,7 @@ class ExecutionResult:
         self.rolled_back = rolled_back
         self.duration_seconds = duration_seconds
         self.checkpoint_id = checkpoint_id
-        self.executed_at = datetime.utcnow().isoformat()
+        self.executed_at = datetime.now(timezone.utc).isoformat()
 
     def to_dict(self):
         return {

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="font-family:sans-serif;max-width:600px;margin:0 auto">
+    <div style="background:#1e40af;color:white;padding:16px 24px;border-radius:8px 8px 0 0">
+        <h2 style="margin:0">Weekly Operations Report</h2>
+        <p style="margin:4px 0 0;opacity:0.8">{{period}}</p>
+    </div>
+    <div style="border:1px solid #e5e7eb;border-top:none;padding:24px;border-radius:0 0 8px 8px">
+        <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px">
+            <div style="flex:1;min-width:120px;background:#f3f4f6;padding:12px;border-radius:8px;text-align:center">
+                <div style="font-size:24px;font-weight:bold">{{incidents_count}}</div>
+                <div style="color:#6b7280;font-size:12px">Incidents</div>
+            </div>
+            <div style="flex:1;min-width:120px;background:#f3f4f6;padding:12px;border-radius:8px;text-align:center">
+                <div style="font-size:24px;font-weight:bold">{{auto_resolved}}</div>
+                <div style="color:#6b7280;font-size:12px">Auto-Resolved</div>
+            </div>
+            <div style="flex:1;min-width:120px;background:#f3f4f6;padding:12px;border-radius:8px;text-align:center">
+                <div style="font-size:24px;font-weight:bold">{{health_score}}%</div>
+                <div style="color:#6b7280;font-size:12px">Health Score</div>
+            </div>
+            <div style="flex:1;min-width:120px;background:#f3f4f6;padding:12px;border-radius:8px;text-align:center">
+                <div style="font-size:24px;font-weight:bold">{{mttr_avg}}s</div>
+                <div style="color:#6b7280;font-size:12px">Avg Resolution</div>
+            </div>
+        </div>
+    </div>
+    <p style="color:#9ca3af;font-size:12px;text-align:center;margin-top:16px">DevOps AI Assistant — Weekly Digest</p>
+</body>
+</html>

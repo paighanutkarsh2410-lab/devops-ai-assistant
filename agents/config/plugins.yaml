@@ -1,0 +1,35 @@
+# Plugin Configuration
+# Enable/disable plugins, set priorities, and configure settings.
+
+# Load order (plugins not listed here load alphabetically after these)
+load_order:
+  - example_plugin
+
+# Sandbox defaults
+sandbox:
+  timeout_sec: 30
+  max_memory_mb: 256
+  allow_network: true
+  allow_filesystem: false
+
+# Per-plugin configuration
+plugins:
+  example_plugin:
+    enabled: true
+    priority: 10
+    settings:
+      endpoints:
+        - url: "http://localhost:8000/health"
+          name: "Backend API"
+          threshold_ms: 500
+        - url: "http://localhost:3000"
+          name: "Frontend"
+          threshold_ms: 1000
+      check_interval_sec: 60
+
+  # Marketplace-installed plugins inherit defaults unless overridden here
+  # aws_cloudwatch_connector:
+  #   enabled: false
+  #   settings:
+  #     region: us-east-1
+  #     namespace: AWS/EC2

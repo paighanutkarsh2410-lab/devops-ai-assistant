@@ -5,7 +5,7 @@ import json
 import os
 import uuid
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +28,7 @@ class CheckpointManager:
         checkpoint = {
             "id": checkpoint_id,
             "service": service,
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "state": {
                 "metrics": context.get("metrics", {}),
                 "config": context.get("config", {}),
@@ -61,7 +61,7 @@ class CheckpointManager:
             checkpoint = json.load(f)
 
         checkpoint["restored"] = True
-        checkpoint["restored_at"] = datetime.utcnow().isoformat()
+        checkpoint["restored_at"] = datetime.now(timezone.utc).isoformat()
         with open(filepath, 'w') as f:
             json.dump(checkpoint, f, indent=2)
 
@@ -93,7 +93,7 @@ class CheckpointManager:
 
     def cleanup_old(self, max_age_hours: int = 24):
         """Remove checkpoints older than max_age_hours."""
-        cutoff = datetime.utcnow()
+        cutoff = datetime.now(timezone.utc)
         removed = 0
         for fname in os.listdir(self.storage_dir):
             if fname.endswith('.json'):

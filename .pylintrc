@@ -1,0 +1,35 @@
+[MASTER]
+jobs=4
+load-plugins=pylint.extensions.docparams
+
+[FORMAT]
+max-line-length=120
+indent-string='    '
+
+[MESSAGES CONTROL]
+disable=
+    C0111,
+    C0114,
+    C0115,
+    C0116,
+    R0903,
+    R0913,
+    W0511,
+    E0401,
+    C0209
+
+[BASIC]
+good-names=i,j,k,v,e,f,r,s,t,x,id,db,fn,_
+
+[DESIGN]
+max-args=10
+max-locals=20
+max-returns=8
+max-branches=15
+max-statements=60
+
+[SIMILARITIES]
+min-similarity-lines=6
+
+[IMPORTS]
+allow-wildcard-with-all=no

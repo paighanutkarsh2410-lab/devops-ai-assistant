@@ -1,0 +1,40 @@
+# Prediction Agent Configuration
+
+predictions:
+  # How often to run predictions (in seconds)
+  interval_seconds: 3600  # 1 hour
+
+  # Forecast horizon
+  default_horizon_hours: 168  # 7 days
+  short_term_hours: 24
+  long_term_days: 30
+
+  # History window for training models
+  history_days: 30
+
+  # Alert thresholds (predict breach of these values)
+  thresholds:
+    cpu: 90        # %
+    memory: 90     # %
+    disk: 85       # %
+    error_rate: 10 # errors/min
+    response_time: 1000  # ms
+
+  # Only alert if breach predicted within this window
+  alert_windows:
+    critical: 24   # hours
+    high: 72       # hours
+    medium: 168    # hours (7 days)
+
+  # Minimum confidence to create alert
+  min_confidence: 60
+
+  # Capacity planning
+  capacity:
+    growth_buffer_percent: 20
+    scale_lead_time_days: 3
+
+  # Cost forecasting
+  costs:
+    enabled: true
+    alert_on_increase_percent: 30

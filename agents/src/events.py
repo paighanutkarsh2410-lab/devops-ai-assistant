@@ -4,7 +4,7 @@ Event system for inter-agent communication via Redis pub/sub.
 import json
 import redis
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from dotenv import load_dotenv
 
 load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
@@ -23,6 +23,16 @@ APPROVAL_REQUESTED = "approval_requested"
 APPROVAL_GRANTED = "approval_granted"
 REMEDIATION_COMPLETE = "remediation_complete"
 VERIFICATION_COMPLETE = "verification_complete"
+LEARNING_STARTED = "learning_started"
+LEARNING_COMPLETE = "learning_complete"
+PATTERN_DISCOVERED = "pattern_discovered"
+RECOMMENDATION_MADE = "recommendation_made"
+PREDICTION_STARTED = "prediction_started"
+PREDICTION_COMPLETE = "prediction_complete"
+CAPACITY_BREACH_PREDICTED = "capacity_breach_predicted"
+COST_OVERRUN_PREDICTED = "cost_overrun_predicted"
+NOTIFICATION_SENT = "notification_sent"
+NOTIFICATION_FAILED = "notification_failed"
 
 CHANNEL = "devops_agent_events"
 
@@ -38,7 +48,7 @@ def publish_event(event_type: str, data: dict):
         message = json.dumps({
             "type": event_type,
             "data": data,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         })
         r.publish(CHANNEL, message)
     except Exception as e:

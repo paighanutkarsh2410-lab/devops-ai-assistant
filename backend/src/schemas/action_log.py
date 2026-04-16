@@ -1,6 +1,6 @@
 """Pydantic schemas for action logs (audit trail)."""
-from pydantic import BaseModel
-from typing import Optional
+from pydantic import BaseModel, field_validator
+from typing import Optional, Any
 from datetime import datetime
 
 
@@ -36,6 +36,11 @@ class ActionLogResponse(BaseModel):
     error_message: Optional[str] = None
     approval_required: bool
     approved_by: Optional[str] = None
+
+    @field_validator("id", "incident_id", mode="before")
+    @classmethod
+    def stringify_uuid(cls, v: Any) -> str:
+        return str(v) if v is not None else v
 
     class Config:
         from_attributes = True

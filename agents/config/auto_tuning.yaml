@@ -1,0 +1,37 @@
+# Auto-Tuning Configuration
+# The Learning Agent uses these settings to control how aggressively it adapts.
+
+auto_tuning:
+  enabled: true
+
+  # How fast the system adapts (0.1 = slow, 1.0 = fast)
+  learning_rate: 0.3
+
+  # Minimum data points before auto-tuning kicks in
+  min_data_points: 5
+
+  # Detection threshold tuning
+  detection:
+    enabled: true
+    max_threshold_change_per_cycle: 0.1
+    target_false_positive_rate: 0.10  # 10%
+    target_false_negative_rate: 0.05  # 5%
+
+  # Action preference tuning
+  action_preferences:
+    enabled: true
+    min_attempts_before_ranking: 3
+    penalty_for_failure: 0.15
+    reward_for_success: 0.10
+
+  # Baseline learning
+  baselines:
+    enabled: true
+    update_interval_minutes: 60
+    history_window_hours: 168  # 7 days
+
+  # Correlation weight tuning
+  correlations:
+    enabled: true
+    min_accuracy_threshold: 0.5
+    weight_change_step: 0.1

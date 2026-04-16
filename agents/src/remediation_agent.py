@@ -8,7 +8,8 @@ import logging
 import time
 import requests
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'backend', 'src'))
+sys.path.insert(0, os.path.dirname(__file__))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'backend', 'src'))
 
 from base_agent import BaseAgent
 from config import BACKEND_URL, REDIS_URL
@@ -17,6 +18,14 @@ from safety.safety_rules import SafetyRules
 from actions import ACTION_REGISTRY
 from integrations.docker_client import DockerController
 from integrations.kubernetes_client import KubernetesController
+
+# Learning integration (optional)
+try:
+    from learning.recommendation_engine import RecommendationEngine
+    from learning.feedback_loop import FeedbackLoop
+    LEARNING_AVAILABLE = True
+except ImportError:
+    LEARNING_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +62,19 @@ class RemediationAgent(BaseAgent):
         self.execution_framework = SafeExecutionFramework(dry_run=dry_run)
         self._processed_ids = set()
         self._dry_run = dry_run
+
+        # Learning integration
+        self._recommendation_engine = None
+        self._feedback_loop = None
+        if LEARNING_AVAILABLE:
+            try:
+                self._feedback_loop = FeedbackLoop()
+                self._recommendation_engine = RecommendationEngine(
+                    feedback_loop=self._feedback_loop
+                )
+                logger.info("[RemAgent] Learning integration active")
+            except Exception:
+                pass
 
         # Initialize infrastructure controllers
         self._docker = None
@@ -99,9 +121,20 @@ class RemediationAgent(BaseAgent):
         root_cause = incident.get("root_cause", "")
         solution = incident.get("solution", "")
 
-        # Step 1: Select action
-        print(f"    Step 1: Selecting remediation action...")
-        action_name = self._select_action(root_cause, solution)
+        # Step 1: Check recommendations from Learning Agent
+        recommended = False
+        action_name = ""
+        if self._recommendation_engine:
+            print(f"    Step 1a: Checking learned recommendations...")
+            action_name = self._get_recommended_action(incident)
+            if action_name:
+                recommended = True
+                print(f"    Recommendation: {action_name}")
+
+        # Step 1b: Fall back to keyword matching
+        if not action_name:
+            print(f"    Step 1: Selecting remediation action...")
+            action_name = self._select_action(root_cause, solution)
         if not action_name:
             print(f"    No suitable action found for: {root_cause[:80]}")
             self._update_status(inc_id, "needs_human", "No automated action available")
@@ -180,6 +213,9 @@ class RemediationAgent(BaseAgent):
                 print(f"    Rollback was performed")
             self._update_status(inc_id, "needs_human", f"Action failed: {result.message}")
 
+        # Step 6: Feed outcome back to Learning Agent
+        self._record_learning_outcome(inc_id, action, result, service, recommended)
+
         print(f"    Done: success={result.success}, impact={result.impact_score}")
 
     def _select_action(self, root_cause: str, solution: str) -> str:
@@ -255,3 +291,44 @@ class RemediationAgent(BaseAgent):
             )
         except Exception as e:
             logger.warning(f"[RemAgent] Failed to update incident: {e}")
+
+    def _get_recommended_action(self, incident: dict) -> str:
+        """Get the top recommended action from the Learning Agent."""
+        if not self._recommendation_engine:
+            return ""
+        try:
+            # Fetch similar incidents from backend learning data
+            similar = self.api_get("/learning/data", {"limit": 20})
+            if not similar:
+                return ""
+
+            recs = self._recommendation_engine.recommend_actions(
+                incident, similar, top_k=1
+            )
+            if recs and recs[0].get("confidence", 0) >= 60:
+                action_name = recs[0]["action_name"]
+                # Verify it's a valid registered action
+                if action_name in ACTION_REGISTRY:
+                    self._recommendation_engine.log_acceptance(
+                        action_name, True, incident.get("id", "")
+                    )
+                    return action_name
+        except Exception as e:
+            logger.debug(f"[RemAgent] Recommendation lookup failed: {e}")
+        return ""
+
+    def _record_learning_outcome(
+        self, incident_id: str, action, result, service: str, was_recommended: bool
+    ):
+        """Feed remediation outcome back to the learning system."""
+        if not self._feedback_loop:
+            return
+        try:
+            self._feedback_loop.record_outcome(
+                incident_id=incident_id,
+                action_taken=action.name,
+                success=result.success,
+                service_name=service,
+            )
+        except Exception as e:
+            logger.debug(f"[RemAgent] Feedback recording failed: {e}")

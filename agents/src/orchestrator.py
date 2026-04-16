@@ -1,5 +1,5 @@
 """
-Agent Orchestrator: Coordinates Monitor → Diagnostic → Remediation pipeline.
+Agent Orchestrator: Coordinates Monitor → Diagnostic → Remediation → Learn → Predict → Communicate pipeline.
 Listens for events via Redis pub/sub and routes to appropriate agents.
 """
 import threading
@@ -7,6 +7,9 @@ import time
 from monitor_agent import MonitorAgent
 from diagnostic_agent import DiagnosticAgent
 from remediation_agent import RemediationAgent
+from learning_agent import LearningAgent
+from prediction_agent import PredictionAgent
+from communication_agent import CommunicationAgent
 from events import (
     subscribe_events, publish_event,
     ANOMALY_DETECTED, INCIDENT_CREATED, DIAGNOSIS_COMPLETE,
@@ -20,6 +23,9 @@ class AgentOrchestrator:
         self.monitor_agent = MonitorAgent()
         self.diagnostic_agent = DiagnosticAgent()
         self.remediation_agent = RemediationAgent(dry_run=dry_run)
+        self.learning_agent = LearningAgent()
+        self.prediction_agent = PredictionAgent()
+        self.communication_agent = CommunicationAgent()
         self._running = False
         self._threads = []
         self._auto_remediation = True
@@ -34,6 +40,9 @@ class AgentOrchestrator:
         self.monitor_agent.authenticate()
         self.diagnostic_agent.authenticate()
         self.remediation_agent.authenticate()
+        self.learning_agent.authenticate()
+        self.prediction_agent.authenticate()
+        self.communication_agent.authenticate()
 
         # Start Monitor Agent
         monitor_thread = threading.Thread(
@@ -62,6 +71,33 @@ class AgentOrchestrator:
         rem_thread.start()
         self._threads.append(rem_thread)
 
+        # Start Learning Agent
+        learn_thread = threading.Thread(
+            target=self._run_learning,
+            daemon=True,
+            name="LearningAgent"
+        )
+        learn_thread.start()
+        self._threads.append(learn_thread)
+
+        # Start Prediction Agent (hourly)
+        pred_thread = threading.Thread(
+            target=self._run_prediction,
+            daemon=True,
+            name="PredictionAgent"
+        )
+        pred_thread.start()
+        self._threads.append(pred_thread)
+
+        # Start Communication Agent (every 5 min for daily summary check)
+        comm_thread = threading.Thread(
+            target=self._run_communication,
+            daemon=True,
+            name="CommunicationAgent"
+        )
+        comm_thread.start()
+        self._threads.append(comm_thread)
+
         # Start event listener
         event_thread = threading.Thread(
             target=self._listen_events,
@@ -75,6 +111,9 @@ class AgentOrchestrator:
         print(f"  Monitor Agent:     checking every {CHECK_INTERVAL_SECONDS}s")
         print(f"  Diagnostic Agent:  checking every 60s")
         print(f"  Remediation Agent: checking every 90s")
+        print(f"  Learning Agent:    checking every 120s")
+        print(f"  Prediction Agent:  checking every 3600s")
+        print(f"  Comms Agent:       checking every 300s")
         print(f"  Auto-remediation:  {'ENABLED' if self._auto_remediation else 'DISABLED'}")
         print(f"  Event listener:    active")
         print()
@@ -121,6 +160,45 @@ class AgentOrchestrator:
                     pass
             time.sleep(90)
 
+    def _run_learning(self):
+        """Run Learning Agent loop."""
+        while self._running:
+            try:
+                self.learning_agent.tick()
+            except Exception as e:
+                print(f"[Orchestrator] Learning error: {e}")
+                try:
+                    self.learning_agent.authenticate()
+                except Exception:
+                    pass
+            time.sleep(120)
+
+    def _run_prediction(self):
+        """Run Prediction Agent loop (hourly)."""
+        while self._running:
+            try:
+                self.prediction_agent.tick()
+            except Exception as e:
+                print(f"[Orchestrator] Prediction error: {e}")
+                try:
+                    self.prediction_agent.authenticate()
+                except Exception:
+                    pass
+            time.sleep(3600)
+
+    def _run_communication(self):
+        """Run Communication Agent loop (every 5 min)."""
+        while self._running:
+            try:
+                self.communication_agent.tick()
+            except Exception as e:
+                print(f"[Orchestrator] Communication error: {e}")
+                try:
+                    self.communication_agent.authenticate()
+                except Exception:
+                    pass
+            time.sleep(300)
+
     def _listen_events(self):
         """Listen for inter-agent events."""
         try:
@@ -132,6 +210,10 @@ class AgentOrchestrator:
         """Route events to appropriate handlers."""
         if event_type == ANOMALY_DETECTED:
             print(f"[Orchestrator] Anomaly detected, triggering diagnostic...")
+            try:
+                self.communication_agent.handle_incident_detected(data)
+            except Exception as e:
+                print(f"[Orchestrator] Notification failed: {e}")
 
         elif event_type == DIAGNOSIS_COMPLETE:
             inc_id = data.get("incident_id", "")
@@ -147,6 +229,23 @@ class AgentOrchestrator:
             success = data.get("success", False)
             print(f"[Orchestrator] Remediation {'succeeded' if success else 'failed'} for {inc_id}")
 
+            try:
+                self.communication_agent.handle_remediation_completed(
+                    inc_id, data.get("action_name", "unknown"), success, data
+                )
+            except Exception as e:
+                print(f"[Orchestrator] Notification failed: {e}")
+
+            # Trigger learning from the resolved incident
+            if success:
+                print(f"[Orchestrator] Triggering learning for {inc_id}...")
+                try:
+                    incident = self.learning_agent.api_get(f"/incidents/{inc_id}")
+                    if incident:
+                        self.learning_agent.learn_from_incident(incident)
+                except Exception as e:
+                    print(f"[Orchestrator] Learning trigger failed: {e}")
+
     def stop(self):
         """Stop all agents gracefully."""
         print("\n[Orchestrator] Shutting down...")
@@ -154,6 +253,9 @@ class AgentOrchestrator:
         self.monitor_agent.stop()
         self.diagnostic_agent.stop()
         self.remediation_agent.stop()
+        self.learning_agent.stop()
+        self.prediction_agent.stop()
+        self.communication_agent.stop()
 
     def wait(self):
         """Block until interrupted."""
