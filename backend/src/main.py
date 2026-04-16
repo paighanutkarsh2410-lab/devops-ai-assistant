@@ -73,7 +73,7 @@ app.add_middleware(RateLimitMiddleware)
 app.add_middleware(CacheMiddleware)
 
 # CORS
-ALLOWED_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:3000,https://*.vercel.app").split(",")
+ALLOWED_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:3000,https://*.vercel.app,https://frontend-seven-khaki-75.vercel.app").split(",")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
