@@ -54,6 +54,7 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [focused, setFocused] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => { setMounted(true); }, []);
@@ -215,16 +216,48 @@ export default function LoginPage() {
                   <span style={{ fontSize: 12 }}>{field.icon}</span>
                   {field.label}
                 </label>
-                <input
-                  type={field.type}
-                  required={field.name === 'email' || field.name === 'password'}
-                  value={formData[field.name as keyof typeof formData]}
-                  onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })}
-                  onFocus={() => setFocused(field.name)}
-                  onBlur={() => setFocused('')}
-                  placeholder={field.placeholder}
-                  style={inputStyle(field.name)}
-                />
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type={field.name === 'password' ? (showPassword ? 'text' : 'password') : field.type}
+                    required={field.name === 'email' || field.name === 'password'}
+                    value={formData[field.name as keyof typeof formData]}
+                    onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })}
+                    onFocus={() => setFocused(field.name)}
+                    onBlur={() => setFocused('')}
+                    placeholder={field.placeholder}
+                    style={{
+                      ...inputStyle(field.name),
+                      paddingRight: field.name === 'password' ? 48 : 16,
+                    }}
+                  />
+                  {field.name === 'password' && (
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      style={{
+                        position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)',
+                        background: 'none', border: 'none', cursor: 'pointer', padding: 4,
+                        color: showPassword ? '#60a5fa' : '#52525b',
+                        transition: 'color 0.3s',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      }}
+                    >
+                      {showPassword ? (
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                          <circle cx="12" cy="12" r="3" />
+                        </svg>
+                      ) : (
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                          <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+                          <line x1="1" y1="1" x2="23" y2="23" />
+                          <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" />
+                        </svg>
+                      )}
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
 
@@ -282,27 +315,6 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Demo credentials */}
-        <div className="slide-up-d3" style={{
-          textAlign: 'center', marginTop: 24,
-          padding: '14px 24px', borderRadius: 14,
-          background: 'rgba(59,130,246,0.04)',
-          border: '1px solid rgba(59,130,246,0.08)',
-          backdropFilter: 'blur(10px)',
-        }}>
-          <span style={{ fontSize: 12, color: '#3f3f46' }}>
-            Demo credentials:{' '}
-            <span style={{
-              color: '#60a5fa', fontFamily: 'monospace', fontWeight: 600,
-              padding: '2px 8px', borderRadius: 6, background: 'rgba(59,130,246,0.08)',
-            }}>demo@test.com</span>
-            {' / '}
-            <span style={{
-              color: '#60a5fa', fontFamily: 'monospace', fontWeight: 600,
-              padding: '2px 8px', borderRadius: 6, background: 'rgba(59,130,246,0.08)',
-            }}>Demo@123</span>
-          </span>
-        </div>
       </div>
     </div>
   );

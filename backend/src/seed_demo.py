@@ -24,20 +24,22 @@ def seed():
     cur = conn.cursor()
 
     # ── 1. Get or create demo user ──────────────────────────
-    cur.execute("SELECT id FROM users WHERE email = 'demo@test.com'")
+    cur.execute("SELECT id FROM users WHERE email = 'aidevops@demo.com'")
     row = cur.fetchone()
     if row:
         user_id = str(row[0])
-        print(f"Using existing user: demo@test.com (id={user_id})")
+        print(f"Using existing user: aidevops@demo.com (id={user_id})")
     else:
         user_id = uid()
-        # bcrypt hash of "Demo@123"
-        hashed = "$2b$12$LJ3m4ys2Y4GHgXuH7v2xJOQZC4bQXPmX5Y7X3kR5X3kR5X3kR5X3k"
+        # Hash password at runtime
+        from passlib.context import CryptContext
+        pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+        hashed = pwd_context.hash("har@2410")
         cur.execute("""
             INSERT INTO users (id, email, hashed_password, full_name, company, is_active, created_at)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
-        """, (user_id, 'demo@test.com', hashed, 'Utkarsh', 'DevOps AI', True, NOW))
-        print(f"Created demo user: demo@test.com / Demo@123")
+        """, (user_id, 'aidevops@demo.com', hashed, 'Utkarsh', 'DevOps AI', True, NOW))
+        print(f"Created demo user: aidevops@demo.com / har@2410")
 
     # ── 2. Clear existing seed data ─────────────────────────
     print("Clearing old seed data...")
@@ -308,7 +310,7 @@ def seed():
     cur.close()
     conn.close()
     print("\nDemo data seeded successfully!")
-    print("Login: demo@test.com / Demo@123")
+    print("Login: aidevops@demo.com / har@2410")
 
 
 if __name__ == "__main__":
