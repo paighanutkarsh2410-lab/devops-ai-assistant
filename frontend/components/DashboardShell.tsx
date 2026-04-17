@@ -255,19 +255,51 @@ export default function DashboardShell({ children }: { children: ReactNode }) {
           )}
         </div>
 
-        {/* Collapse toggle */}
+        {/* Collapse toggle — morphing hamburger */}
         <button
           onClick={() => setCollapsed(!collapsed)}
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           style={{
-            padding: '6px 8px', margin: '8px 10px 2px',
-            borderRadius: 8, border: '1px solid rgba(255,255,255,0.04)',
+            width: collapsed ? 40 : 36, height: 36,
+            margin: collapsed ? '10px auto 2px' : '10px 10px 2px auto',
+            borderRadius: 10, border: '1px solid rgba(255,255,255,0.05)',
             background: 'rgba(255,255,255,0.02)',
-            color: colors.textDim, cursor: 'pointer', fontSize: 13,
-            textAlign: collapsed ? 'center' : 'right',
-            transition: 'all 0.2s',
+            cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+            position: 'relative',
           }}
         >
-          {collapsed ? '→' : '←'}
+          <div style={{ width: 18, height: 14, position: 'relative' }}>
+            {/* Top bar */}
+            <span style={{
+              position: 'absolute', left: 0, height: 2, borderRadius: 2,
+              background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)',
+              transition: 'all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1)',
+              width: collapsed ? 18 : 12,
+              top: collapsed ? 6 : 0,
+              transform: collapsed ? 'rotate(45deg)' : 'rotate(0)',
+              transformOrigin: 'center',
+            }} />
+            {/* Middle bar */}
+            <span style={{
+              position: 'absolute', left: 0, top: 6, height: 2, borderRadius: 2,
+              background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)',
+              transition: 'all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1)',
+              width: collapsed ? 0 : 18,
+              opacity: collapsed ? 0 : 1,
+            }} />
+            {/* Bottom bar */}
+            <span style={{
+              position: 'absolute', left: 0, height: 2, borderRadius: 2,
+              background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)',
+              transition: 'all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1)',
+              width: collapsed ? 18 : 14,
+              top: collapsed ? 6 : 12,
+              transform: collapsed ? 'rotate(-45deg)' : 'rotate(0)',
+              transformOrigin: 'center',
+            }} />
+          </div>
         </button>
 
         {/* Nav groups */}
