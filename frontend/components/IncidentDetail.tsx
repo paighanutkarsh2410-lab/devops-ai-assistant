@@ -145,7 +145,6 @@ export default function IncidentDetail({ incident, onClose }: IncidentDetailProp
           opacity: visible ? 1 : 0,
           transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
           position: 'relative',
-          overflow: 'hidden',
         }}
       >
         {/* Top glow accent based on severity */}
