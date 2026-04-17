@@ -16,8 +16,23 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DevOps AI Assistant",
-  description: "Autonomous infrastructure monitoring and management system",
+  title: "DevOps AI Assistant — Autonomous AI-Powered Infrastructure Management",
+  description: "AI-powered DevOps platform with 6 autonomous agents that monitor, diagnose, and remediate infrastructure issues in real-time. Features predictive analytics, auto-remediation, and intelligent incident management.",
+  keywords: ["DevOps AI Assistant", "autonomous DevOps", "AI infrastructure management", "incident management", "predictive analytics", "auto-remediation", "AI agents DevOps"],
+  openGraph: {
+    title: "DevOps AI Assistant — Autonomous Infrastructure Management",
+    description: "6 autonomous AI agents that monitor, diagnose, and remediate your infrastructure in real-time.",
+    url: "https://devops-ai-assistant.vercel.app",
+    siteName: "DevOps AI Assistant",
+    type: "website",
+  },
+  verification: {
+    google: "JD5dn49dCIENRH",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
