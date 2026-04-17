@@ -22,12 +22,12 @@ export const metadata: Metadata = {
   openGraph: {
     title: "DevOps AI Assistant — Autonomous Infrastructure Management",
     description: "6 autonomous AI agents that monitor, diagnose, and remediate your infrastructure in real-time.",
-    url: "https://devops-ai-assistant.vercel.app",
+    url: "https://devops-ai-assistant.online",
     siteName: "DevOps AI Assistant",
     type: "website",
   },
   verification: {
-    google: "5JHG-V9utWr5xtgYFVsE7XLnTDosVXvEfU6dCREDxlA",
+    google: ["5JHG-V9utWr5xtgYFVsE7XLnTDosVXvEfU6dCREDxlA", "s0OYqnP4VrkOV1q8opm0NYl6ajTubNFZlMMHUCrtzhI"],
   },
   robots: {
     index: true,
