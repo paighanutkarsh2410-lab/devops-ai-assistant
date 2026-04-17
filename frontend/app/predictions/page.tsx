@@ -137,13 +137,23 @@ export default function PredictionsPage() {
         )}
 
         {/* Tabs */}
-        <div className="slide-up-d2" style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
-          {tabs.map(t => (
-            <button
-              key={t.key}
-              onClick={() => setActiveTab(t.key)}
-              style={activeTab === t.key ? btnActive : btn}
-            >
+        <div className="slide-up-d2" style={{
+          display: 'flex', gap: 4, marginBottom: 28, padding: 4,
+          background: 'rgba(255,255,255,0.015)', borderRadius: 14,
+          border: '1px solid rgba(255,255,255,0.04)',
+          width: 'fit-content',
+        }}>
+          {tabs.map((t) => (
+            <button key={t.key} onClick={() => setActiveTab(t.key)}
+              style={{
+                padding: '10px 20px', borderRadius: 10, border: 'none',
+                background: activeTab === t.key ? 'linear-gradient(135deg, #3b82f6, #8b5cf6)' : 'transparent',
+                color: activeTab === t.key ? '#fff' : '#52525b',
+                cursor: 'pointer', fontSize: 13,
+                fontWeight: activeTab === t.key ? 700 : 400,
+                transition: 'all 0.3s',
+                boxShadow: activeTab === t.key ? '0 4px 16px rgba(59,130,246,0.2)' : 'none',
+              }}>
               {t.label}
             </button>
           ))}
