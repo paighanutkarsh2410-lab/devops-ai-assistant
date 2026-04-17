@@ -1,11 +1,23 @@
 """API routes for predictions, forecasts, capacity planning, and costs."""
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from sqlalchemy import func, desc
 from typing import Optional
 from datetime import datetime
 
 from models import get_db, PredictiveAlert, Forecast, CapacityPlan, CostForecast
+
+
+def _serialize(obj):
+    """Convert SQLAlchemy model to JSON-safe dict."""
+    d = {}
+    for col in obj.__table__.columns:
+        val = getattr(obj, col.name)
+        if hasattr(val, 'hex'):  # UUID
+            val = str(val)
+        d[col.name] = val
+    return d
 
 router = APIRouter(prefix="/predictions", tags=["predictions"])
 
@@ -25,7 +37,7 @@ def get_predictive_alerts(
         query = query.filter(PredictiveAlert.severity == severity)
     if prevented is not None:
         query = query.filter(PredictiveAlert.prevented == prevented)
-    return query.order_by(desc(PredictiveAlert.created_at)).limit(limit).all()
+    return [_serialize(a) for a in query.order_by(desc(PredictiveAlert.created_at)).limit(limit).all()]
 
 
 @router.post("/alerts")
@@ -54,7 +66,7 @@ def create_predictive_alert(data: dict, db: Session = Depends(get_db)):
     db.add(alert)
     db.commit()
     db.refresh(alert)
-    return alert
+    return _serialize(alert)
 
 
 @router.post("/alerts/{alert_id}/prevent")
@@ -69,7 +81,7 @@ def mark_alert_prevented(alert_id: str, data: dict, db: Session = Depends(get_db
     alert.prevented_at = datetime.utcnow()
     db.commit()
     db.refresh(alert)
-    return alert
+    return _serialize(alert)
 
 
 @router.get("/alerts/stats")
@@ -109,7 +121,7 @@ def get_metric_forecasts(
         query = query.filter(Forecast.service_name == service_name)
     if metric_name:
         query = query.filter(Forecast.metric_name == metric_name)
-    return query.order_by(desc(Forecast.created_at)).limit(limit).all()
+    return [_serialize(f) for f in query.order_by(desc(Forecast.created_at)).limit(limit).all()]
 
 
 @router.post("/metrics")
@@ -130,7 +142,7 @@ def store_metric_forecast(data: dict, db: Session = Depends(get_db)):
     db.add(forecast)
     db.commit()
     db.refresh(forecast)
-    return forecast
+    return _serialize(forecast)
 
 
 # ── Capacity ────────────────────────────────────────────────────────────
@@ -145,7 +157,7 @@ def get_capacity_plans(
     query = db.query(CapacityPlan)
     if status:
         query = query.filter(CapacityPlan.status == status)
-    return query.order_by(desc(CapacityPlan.created_at)).limit(limit).all()
+    return [_serialize(p) for p in query.order_by(desc(CapacityPlan.created_at)).limit(limit).all()]
 
 
 @router.post("/plan-event")
@@ -165,7 +177,7 @@ def create_event_plan(data: dict, db: Session = Depends(get_db)):
     db.add(plan)
     db.commit()
     db.refresh(plan)
-    return plan
+    return _serialize(plan)
 
 
 # ── Costs ───────────────────────────────────────────────────────────────
@@ -176,13 +188,13 @@ def get_current_costs(db: Session = Depends(get_db)):
     latest = db.query(CostForecast).order_by(desc(CostForecast.created_at)).first()
     if not latest:
         return {"current_cost": 0, "predicted_cost": 0, "message": "No cost data yet"}
-    return latest
+    return _serialize(latest)
 
 
 @router.get("/costs/forecast")
 def get_cost_forecast(limit: int = 6, db: Session = Depends(get_db)):
     """Get historical cost forecasts."""
-    return db.query(CostForecast).order_by(desc(CostForecast.created_at)).limit(limit).all()
+    return [_serialize(c) for c in db.query(CostForecast).order_by(desc(CostForecast.created_at)).limit(limit).all()]
 
 
 @router.get("/costs/optimization")
@@ -208,4 +220,4 @@ def get_trend_forecasts(
     )
     if service_name:
         query = query.filter(Forecast.service_name == service_name)
-    return query.order_by(desc(Forecast.created_at)).limit(limit).all()
+    return [_serialize(f) for f in query.order_by(desc(Forecast.created_at)).limit(limit).all()]

@@ -33,7 +33,7 @@ export default function LiveMetrics() {
   const loadData = useCallback(async () => {
     try {
       const [metricsRes, alertsRes] = await Promise.all([
-        metricsAPI.getAll({ hours: 1, limit: 1000 }),
+        metricsAPI.getAll({ hours: 24, limit: 1000 }),
         alertsAPI.getAll({ limit: 20 }),
       ]);
       setMetrics(metricsRes.data);
