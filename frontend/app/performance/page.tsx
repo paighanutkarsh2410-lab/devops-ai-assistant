@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import DashboardShell from '@/components/DashboardShell';
 import { colors, card as cardStyle, btn, btnActive } from '@/lib/theme';
-import useWebSocket from '@/lib/useWebSocket';
-import ConnectionStatus from '@/components/ConnectionStatus';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -21,7 +19,6 @@ interface ServiceHealth {
 
 export default function PerformancePage() {
   const router = useRouter();
-  const { lastMessage, connectionStatus } = useWebSocket();
   const [services, setServices] = useState<ServiceHealth[]>([]);
   const [selectedService, setSelectedService] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState('1h');
@@ -94,7 +91,10 @@ export default function PerformancePage() {
         <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
           <div>
             <h1 style={{ fontSize: 26, fontWeight: 800, background: 'linear-gradient(135deg, #f0f0f0, #f59e0b)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Performance Monitoring</h1>
-            <ConnectionStatus status={connectionStatus} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#6b7280' }}>
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#16a34a', display: 'inline-block', boxShadow: '0 0 6px #16a34a', animation: 'pulse 2s infinite' }} />
+              Live — updating every 5s
+            </div>
           </div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             {['1h', '6h', '24h', '7d'].map(t => (

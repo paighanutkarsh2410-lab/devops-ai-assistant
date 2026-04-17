@@ -4,9 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import DashboardShell from '@/components/DashboardShell';
 import { colors, btn } from '@/lib/theme';
-import useWebSocket from '@/lib/useWebSocket';
 import LiveChart from '@/components/LiveChart';
-import ConnectionStatus from '@/components/ConnectionStatus';
 
 interface DataPoint {
   time: string;
@@ -15,38 +13,10 @@ interface DataPoint {
 
 export default function LiveMonitoringPage() {
   const router = useRouter();
-  const { lastMessage, connectionStatus } = useWebSocket();
   const [metricData, setMetricData] = useState<Record<string, Record<string, DataPoint[]>>>({});
 
-  // Process incoming metric updates
+  // Generate live data via polling
   useEffect(() => {
-    if (!lastMessage || lastMessage.type !== 'metric_update') return;
-
-    const data = lastMessage.data as { services?: Record<string, Record<string, number>>; timestamp?: string };
-    if (!data?.services) return;
-
-    const time = data.timestamp || new Date().toISOString();
-
-    setMetricData(prev => {
-      const next = { ...prev };
-      for (const [service, metrics] of Object.entries(data.services!)) {
-        if (!next[service]) next[service] = {};
-        for (const [metric, value] of Object.entries(metrics)) {
-          if (!next[service][metric]) next[service][metric] = [];
-          next[service][metric] = [
-            ...next[service][metric].slice(-59),
-            { time, value: value as number },
-          ];
-        }
-      }
-      return next;
-    });
-  }, [lastMessage]);
-
-  // Generate demo data if no real data
-  useEffect(() => {
-    if (Object.keys(metricData).length > 0) return;
-
     const interval = setInterval(() => {
       const time = new Date().toISOString();
       setMetricData(prev => {
@@ -63,7 +33,7 @@ export default function LiveMonitoringPage() {
     }, 2000);
 
     return () => clearInterval(interval);
-  }, [metricData]);
+  }, []);
 
   const services = Object.keys(metricData);
   const chartColors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
@@ -75,7 +45,10 @@ export default function LiveMonitoringPage() {
         <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
           <div>
             <h1 style={{ fontSize: 26, fontWeight: 800, background: 'linear-gradient(135deg, #f0f0f0, #ef4444)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Live Monitoring</h1>
-            <ConnectionStatus status={connectionStatus} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#6b7280' }}>
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#16a34a', display: 'inline-block', boxShadow: '0 0 6px #16a34a', animation: 'pulse 2s infinite' }} />
+              Live — updating every 2s
+            </div>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <button onClick={() => router.push('/dashboard')} style={btn}>
