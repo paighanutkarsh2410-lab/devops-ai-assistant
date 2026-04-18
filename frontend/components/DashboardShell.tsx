@@ -32,6 +32,7 @@ const navGroups: NavGroup[] = [
       { icon: '🤖', label: 'Agent Status', path: '/agents/status' },
       { icon: '🧠', label: 'Intelligence', path: '/agent-intelligence' },
       { icon: '🕸️', label: 'Decision Graph', path: '/decision-graph' },
+      { icon: '▶️', label: 'Incident Flow', path: '/incident-flow' },
       { icon: '🏗️', label: 'Agent Builder', path: '/agents/builder' },
       { icon: '🛒', label: 'Marketplace', path: '/marketplace' },
       { icon: '📚', label: 'Learning', path: '/learning' },
