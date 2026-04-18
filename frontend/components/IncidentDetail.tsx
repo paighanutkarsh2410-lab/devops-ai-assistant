@@ -64,12 +64,34 @@ const EVENT_LABELS: Record<string, string> = {
   resolution: 'Resolved',
 };
 
+interface ConfidenceStep {
+  step: number;
+  title: string;
+  description: string;
+  confidence_contribution: number;
+  evidence: string[];
+  status: string;
+}
+
+interface ConfidenceData {
+  overall_confidence: number;
+  confidence_level: string;
+  reasoning_chain: ConfidenceStep[];
+  model_version: string;
+  analysis_duration_ms: number;
+  data_points_analyzed: number;
+  factors: Record<string, number>;
+}
+
 export default function IncidentDetail({ incident, onClose }: IncidentDetailProps) {
   const [timeline, setTimeline] = useState<TimelineData | null>(null);
   const [loadingTimeline, setLoadingTimeline] = useState(true);
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [loadingRecs, setLoadingRecs] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [confidence, setConfidence] = useState<ConfidenceData | null>(null);
+  const [loadingConfidence, setLoadingConfidence] = useState(false);
+  const [showReasoning, setShowReasoning] = useState(false);
 
   useEffect(() => {
     // Trigger entrance animation
@@ -103,8 +125,21 @@ export default function IncidentDetail({ incident, onClose }: IncidentDetailProp
       }
     };
 
+    const loadConfidence = async () => {
+      setLoadingConfidence(true);
+      try {
+        const resp = await api.get(`/incidents/${incident.id}/confidence`);
+        setConfidence(resp.data);
+      } catch {
+        // Confidence data is optional
+      } finally {
+        setLoadingConfidence(false);
+      }
+    };
+
     loadTimeline();
     loadRecommendations();
+    loadConfidence();
   }, [incident.id]);
 
   const handleClose = () => {
@@ -270,6 +305,160 @@ export default function IncidentDetail({ incident, onClose }: IncidentDetailProp
                       <span style={{ fontSize: 13, color: '#a1a1aa', lineHeight: 1.6 }}>{action}</span>
                     </div>
                   ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Confidence Score & Reasoning */}
+          {confidence && (
+            <div style={{ marginBottom: 24 }}>
+              <h3 style={{ fontSize: 12, fontWeight: 700, color: '#52525b', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 14 }}>
+                AI Confidence Score
+              </h3>
+
+              {/* Gauge */}
+              <div style={{
+                padding: 20, borderRadius: 16,
+                background: 'rgba(255,255,255,0.02)',
+                border: '1px solid rgba(255,255,255,0.05)',
+                marginBottom: 12,
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+                  {/* Circular gauge */}
+                  <div style={{ position: 'relative', width: 80, height: 80, flexShrink: 0 }}>
+                    <svg width="80" height="80" viewBox="0 0 80 80">
+                      <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="6" />
+                      <circle cx="40" cy="40" r="34" fill="none"
+                        stroke={confidence.overall_confidence >= 85 ? '#10b981' : confidence.overall_confidence >= 70 ? '#f59e0b' : '#ef4444'}
+                        strokeWidth="6" strokeLinecap="round"
+                        strokeDasharray={`${confidence.overall_confidence * 2.136} 213.6`}
+                        transform="rotate(-90 40 40)"
+                        style={{ transition: 'stroke-dasharray 1s ease' }}
+                      />
+                    </svg>
+                    <div style={{
+                      position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      flexDirection: 'column',
+                    }}>
+                      <span style={{
+                        fontSize: 20, fontWeight: 800,
+                        color: confidence.overall_confidence >= 85 ? '#10b981' : confidence.overall_confidence >= 70 ? '#f59e0b' : '#ef4444',
+                      }}>{confidence.overall_confidence}%</span>
+                    </div>
+                  </div>
+
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                      <span style={{
+                        padding: '3px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700,
+                        textTransform: 'uppercase',
+                        background: confidence.confidence_level === 'high' ? 'rgba(16,185,129,0.1)' : confidence.confidence_level === 'medium' ? 'rgba(245,158,11,0.1)' : 'rgba(239,68,68,0.1)',
+                        color: confidence.confidence_level === 'high' ? '#10b981' : confidence.confidence_level === 'medium' ? '#f59e0b' : '#ef4444',
+                      }}>{confidence.confidence_level} confidence</span>
+                      <span style={{ fontSize: 11, color: '#52525b' }}>v{confidence.model_version}</span>
+                    </div>
+
+                    {/* Factor bars */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                      {Object.entries(confidence.factors).map(([key, value]) => (
+                        <div key={key}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
+                            <span style={{ fontSize: 10, color: '#71717a', textTransform: 'capitalize' }}>
+                              {key.replace(/_/g, ' ')}
+                            </span>
+                            <span style={{ fontSize: 10, fontWeight: 700, color: '#a1a1aa' }}>{(value * 100).toFixed(0)}%</span>
+                          </div>
+                          <div style={{ height: 3, borderRadius: 2, background: 'rgba(255,255,255,0.06)' }}>
+                            <div style={{
+                              width: `${value * 100}%`, height: '100%', borderRadius: 2,
+                              background: value >= 0.8 ? '#10b981' : value >= 0.6 ? '#f59e0b' : '#ef4444',
+                              transition: 'width 0.8s ease',
+                            }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+                      <span style={{ fontSize: 10, color: '#52525b' }}>
+                        {confidence.data_points_analyzed.toLocaleString()} data points
+                      </span>
+                      <span style={{ fontSize: 10, color: '#52525b' }}>
+                        {confidence.analysis_duration_ms}ms analysis
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Reasoning chain toggle */}
+              <button onClick={() => setShowReasoning(!showReasoning)} style={{
+                width: '100%', padding: '10px 16px', borderRadius: 10, cursor: 'pointer',
+                background: showReasoning ? 'rgba(59,130,246,0.06)' : 'rgba(255,255,255,0.02)',
+                border: `1px solid ${showReasoning ? 'rgba(59,130,246,0.12)' : 'rgba(255,255,255,0.05)'}`,
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                transition: 'all 0.2s',
+              }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: showReasoning ? '#60a5fa' : '#a1a1aa' }}>
+                  Reasoning Chain ({confidence.reasoning_chain.length} steps)
+                </span>
+                <span style={{ fontSize: 14, color: '#71717a', transform: showReasoning ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }}>
+                  ▼
+                </span>
+              </button>
+
+              {/* Reasoning steps */}
+              {showReasoning && (
+                <div style={{ marginTop: 10, paddingLeft: 16, position: 'relative' }}>
+                  <div style={{
+                    position: 'absolute', left: 6, top: 6, bottom: 6, width: 1,
+                    background: 'linear-gradient(180deg, #3b82f6, #8b5cf6, #10b981)',
+                  }} />
+                  {confidence.reasoning_chain.map((step, i) => {
+                    const stepColor = step.status === 'confirmed' ? '#10b981' : '#f59e0b';
+                    return (
+                      <div key={i} style={{
+                        marginBottom: 14, position: 'relative',
+                        animation: `slide-up 0.3s ease-out ${i * 0.08}s both`,
+                      }}>
+                        <div style={{
+                          position: 'absolute', left: -16, top: 4,
+                          width: 10, height: 10, borderRadius: '50%',
+                          background: stepColor, boxShadow: `0 0 6px ${stepColor}50`,
+                          border: '2px solid rgba(10,10,20,0.95)',
+                        }} />
+                        <div style={{
+                          padding: 12, borderRadius: 10,
+                          background: 'rgba(255,255,255,0.02)',
+                          border: '1px solid rgba(255,255,255,0.04)',
+                        }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <span style={{ fontSize: 10, color: '#52525b', fontWeight: 700 }}>Step {step.step}</span>
+                              <span style={{ fontSize: 12, fontWeight: 600, color: '#e2e8f0' }}>{step.title}</span>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                              <span style={{ fontSize: 11, fontWeight: 700, color: '#3b82f6' }}>+{step.confidence_contribution}%</span>
+                              <span style={{
+                                fontSize: 9, padding: '1px 6px', borderRadius: 4,
+                                background: `${stepColor}15`, color: stepColor, fontWeight: 600,
+                              }}>{step.status}</span>
+                            </div>
+                          </div>
+                          <p style={{ fontSize: 12, color: '#a1a1aa', lineHeight: 1.5, margin: '0 0 6px' }}>
+                            {step.description}
+                          </p>
+                          {step.evidence.map((e, j) => (
+                            <div key={j} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, marginBottom: 2 }}>
+                              <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#3b82f6', marginTop: 5, flexShrink: 0 }} />
+                              <span style={{ fontSize: 11, color: '#71717a', lineHeight: 1.4 }}>{e}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>

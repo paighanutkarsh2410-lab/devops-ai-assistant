@@ -21,6 +21,7 @@ class ChatResponse(BaseModel):
     answer: str
     intent: Optional[dict] = None
     timestamp: Optional[str] = None
+    structured_data: Optional[dict] = None
 
 
 class SuggestedQuery(BaseModel):
@@ -47,10 +48,18 @@ def chat_query(msg: ChatMessage, db: Session = Depends(get_db)):
         oldest = list(_handlers.keys())[0]
         del _handlers[oldest]
 
+    # Include structured data (incidents, metrics, etc.) for rich rendering
+    structured = None
+    raw_data = result.get("data", {})
+    data_type = raw_data.get("type")
+    if data_type in ("incidents", "service_status", "diagnostic"):
+        structured = raw_data
+
     return ChatResponse(
         answer=result.get("answer", "I couldn't process that question."),
         intent=result.get("intent"),
         timestamp=result.get("timestamp"),
+        structured_data=structured,
     )
 
 

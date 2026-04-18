@@ -5,6 +5,7 @@ export interface ChatMessage {
   content: string;
   timestamp?: string;
   intent?: Record<string, unknown>;
+  structured_data?: Record<string, unknown> | null;
 }
 
 export interface SuggestedQuery {
@@ -32,6 +33,7 @@ export async function sendChatMessage(
     content: data.answer,
     timestamp: data.timestamp,
     intent: data.intent,
+    structured_data: data.structured_data || null,
   };
 }
 
