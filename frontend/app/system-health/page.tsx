@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import DashboardShell from '@/components/DashboardShell';
 import { colors, card as cardStyle, btn } from '@/lib/theme';
+import { useBreakpoint } from '@/lib/useMediaQuery';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -16,6 +17,7 @@ interface HealthData {
 
 export default function SystemHealthPage() {
   const router = useRouter();
+  const { isMobile } = useBreakpoint();
   const [health, setHealth] = useState<HealthData | null>(null);
   const [loading, setLoading] = useState(true);
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
@@ -73,11 +75,11 @@ export default function SystemHealthPage() {
 
   return (
     <DashboardShell>
-      <div style={{ padding: 32, maxWidth: 900, margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px 14px' : 32, maxWidth: 900, margin: '0 auto' }}>
         {/* Header */}
-        <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
+        <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 12 : 0, marginBottom: 28 }}>
           <div>
-            <h1 style={{ fontSize: 26, fontWeight: 800, background: 'linear-gradient(135deg, #f0f0f0, #10b981)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>System Health</h1>
+            <h1 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 800, background: 'linear-gradient(135deg, #f0f0f0, #10b981)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>System Health</h1>
             <p style={{ fontSize: 13, color: colors.textMuted }}>
               Last updated: {lastRefresh.toLocaleTimeString()}
             </p>
@@ -110,7 +112,7 @@ export default function SystemHealthPage() {
 
         {/* Infrastructure Services */}
         <h2 className="slide-up-d2" style={{ fontSize: 18, fontWeight: 600, marginBottom: 12, color: colors.text }}>Infrastructure</h2>
-        <div className="slide-up-d2" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 32 }}>
+        <div className="slide-up-d2" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: 12, marginBottom: 32 }}>
           {services.map((svc, i) => (
             <div key={svc.name}
               onMouseEnter={() => setHoveredSvc(i)} onMouseLeave={() => setHoveredSvc(null)}

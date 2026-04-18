@@ -7,6 +7,7 @@ import { colors } from '@/lib/theme';
 import DashboardShell from '@/components/DashboardShell';
 import ActionLog from '@/components/ActionLog';
 import ApprovalCard from '@/components/ApprovalCard';
+import { useBreakpoint } from '@/lib/useMediaQuery';
 
 interface Stats {
   total_actions: number;
@@ -34,6 +35,7 @@ interface Approval {
 
 export default function AuditPage() {
   const router = useRouter();
+  const { isMobile } = useBreakpoint();
   const [stats, setStats] = useState<Stats | null>(null);
   const [approvals, setApprovals] = useState<Approval[]>([]);
   const [activeTab, setActiveTab] = useState<'actions' | 'approvals'>('actions');
@@ -69,15 +71,15 @@ export default function AuditPage() {
 
   return (
     <DashboardShell>
-      <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px 14px' : 32, maxWidth: 1200, margin: '0 auto' }}>
         <div className="slide-up" style={{ marginBottom: 28 }}>
-          <h1 style={{ fontSize: 26, fontWeight: 800, background: 'linear-gradient(135deg, #f0f0f0, #f59e0b)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Audit & Approvals</h1>
+          <h1 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 800, background: 'linear-gradient(135deg, #f0f0f0, #f59e0b)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Audit & Approvals</h1>
           <p style={{ fontSize: 13, color: colors.textMuted }}>Action history, approval workflows, and compliance tracking</p>
         </div>
 
         {/* Stats */}
         {stats && (
-          <div className="slide-up-d1" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 14, marginBottom: 24 }}>
+          <div className="slide-up-d1" style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(5, 1fr)', gap: 14, marginBottom: 24 }}>
             {statItems.map(s => (
               <div key={s.label} style={{
                 background: colors.bgCard, border: `1px solid ${colors.border}`,

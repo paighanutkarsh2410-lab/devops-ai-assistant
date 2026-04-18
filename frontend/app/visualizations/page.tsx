@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import DashboardShell from '@/components/DashboardShell';
 import { colors } from '@/lib/theme';
+import { useBreakpoint } from '@/lib/useMediaQuery';
 import HeatMap from '../../components/charts/HeatMap';
 import SankeyDiagram from '../../components/charts/SankeyDiagram';
 import NetworkGraph from '../../components/charts/NetworkGraph';
@@ -128,13 +129,14 @@ const TABS: { key: TabKey; label: string; icon: string }[] = [
 ];
 
 export default function VisualizationsPage() {
+  const { isMobile } = useBreakpoint();
   const [activeTab, setActiveTab] = useState<TabKey>('heatmap');
 
   return (
     <DashboardShell>
-      <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px 14px' : 32, maxWidth: 1200, margin: '0 auto' }}>
         <div className="slide-up" style={{ marginBottom: 28 }}>
-          <h1 style={{ fontSize: 26, fontWeight: 800, margin: 0, background: 'linear-gradient(135deg, #f0f0f0, #06b6d4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          <h1 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 800, margin: 0, background: 'linear-gradient(135deg, #f0f0f0, #06b6d4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             Advanced Visualizations
           </h1>
           <p style={{ color: colors.textMuted, fontSize: 13, margin: '4px 0 0' }}>

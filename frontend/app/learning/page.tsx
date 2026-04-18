@@ -6,6 +6,7 @@ import { api } from '@/lib/api';
 import DashboardShell from '@/components/DashboardShell';
 import { colors, card as cardStyle, btn, btnActive, th as thStyle, td as tdStyle } from '@/lib/theme';
 import PatternInsights from '@/components/PatternInsights';
+import { useBreakpoint } from '@/lib/useMediaQuery';
 
 interface LearningStats {
   total_patterns_discovered: number;
@@ -41,6 +42,7 @@ interface Insights {
 
 export default function LearningPage() {
   const router = useRouter();
+  const { isMobile } = useBreakpoint();
   const [stats, setStats] = useState<LearningStats | null>(null);
   const [weeklyReport, setWeeklyReport] = useState<WeeklyReport | null>(null);
   const [insights, setInsights] = useState<Insights | null>(null);
@@ -108,11 +110,11 @@ export default function LearningPage() {
 
   return (
     <DashboardShell>
-      <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px 14px' : 32, maxWidth: 1200, margin: '0 auto' }}>
         {/* Header */}
-        <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
+        <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 12 : 0, marginBottom: 28 }}>
           <div>
-            <h1 style={{ fontSize: 26, fontWeight: 800, background: 'linear-gradient(135deg, #f0f0f0, #10b981)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Learning Agent</h1>
+            <h1 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 800, background: 'linear-gradient(135deg, #f0f0f0, #10b981)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Learning Agent</h1>
             <p style={{ fontSize: 13, color: colors.textMuted }}>System intelligence and continuous improvement</p>
           </div>
           <button onClick={() => router.push('/dashboard')} style={btn}>
@@ -122,7 +124,7 @@ export default function LearningPage() {
 
         {/* Stats Cards */}
         {stats && (
-          <div className="slide-up-d1" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 28 }}>
+          <div className="slide-up-d1" style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: 12, marginBottom: 28 }}>
             {statItems.map((s, i) => (
               <div key={i} style={{...cardStyle, position: 'relative', overflow: 'hidden', borderTop: '2px solid #10b981'}}>
                 <div style={{ position: 'absolute', top: -20, left: '50%', transform: 'translateX(-50%)', width: 80, height: 40, background: 'radial-gradient(circle, rgba(16,185,129,0.15), transparent)', filter: 'blur(12px)', animation: 'breathe 4s ease-in-out infinite' }} />
@@ -152,7 +154,7 @@ export default function LearningPage() {
             {/* Weekly Summary */}
             <div style={cardStyle}>
               <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16, color: colors.text }}>This Week</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: 16 }}>
                 <div>
                   <div style={{ fontSize: 24, fontWeight: 700, color: colors.text }}>{weeklyReport.summary.incidents_handled}</div>
                   <div style={{ fontSize: 12, color: colors.textMuted }}>Incidents Handled</div>

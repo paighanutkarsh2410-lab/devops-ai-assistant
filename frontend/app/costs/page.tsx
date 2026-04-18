@@ -6,6 +6,7 @@ import { api } from '@/lib/api';
 import { colors } from '@/lib/theme';
 import DashboardShell from '@/components/DashboardShell';
 import TrendChart from '@/components/TrendChart';
+import { useBreakpoint } from '@/lib/useMediaQuery';
 
 interface ROI {
   incidents_total: number;
@@ -30,6 +31,7 @@ interface Optimization {
 
 export default function CostsPage() {
   const router = useRouter();
+  const { isMobile } = useBreakpoint();
   const [roi, setRoi] = useState<ROI | null>(null);
   const [serviceCosts, setServiceCosts] = useState<Record<string, Record<string, unknown>>>({});
   const [costTrend, setCostTrend] = useState<{ week: string; net_cost: number; automation_savings: number }[]>([]);
@@ -63,10 +65,10 @@ export default function CostsPage() {
 
   return (
     <DashboardShell>
-      <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
-        <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
+      <div style={{ padding: isMobile ? '16px 14px' : 32, maxWidth: 1200, margin: '0 auto' }}>
+        <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 12 : 0, marginBottom: 28 }}>
           <div>
-            <h1 style={{ fontSize: 26, fontWeight: 800, background: 'linear-gradient(135deg, #f0f0f0, #f59e0b)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Cost Analytics</h1>
+            <h1 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 800, background: 'linear-gradient(135deg, #f0f0f0, #f59e0b)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Cost Analytics</h1>
             <p style={{ fontSize: 13, color: colors.textMuted }}>ROI tracking, cost allocation, and optimization</p>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
@@ -86,7 +88,7 @@ export default function CostsPage() {
         ) : (
           <>
             {/* ROI Summary */}
-            <div className="slide-up-d1" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 24 }}>
+            <div className="slide-up-d1" style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: 14, marginBottom: 24 }}>
               {[
                 { label: 'Total Savings', value: `$${roi?.total_savings?.toFixed(0) || 0}`, sub: `${days} day period`, color: colors.success },
                 { label: 'ROI', value: `${roi?.roi_percent?.toFixed(0) || 0}%`, sub: `vs $${roi?.platform_cost || 0}/mo`, color: (roi?.roi_percent || 0) > 0 ? colors.success : colors.danger },
@@ -111,7 +113,7 @@ export default function CostsPage() {
               <TrendChart data={costTrend.map(w => w.net_cost)} labels={costTrend.map(w => w.week)} title="Weekly Net Cost" color="#dc2626" height={180} />
             </div>
 
-            <div className="slide-up-d3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 24 }}>
+            <div className="slide-up-d3" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14, marginBottom: 24 }}>
               {/* Cost by service */}
               <div style={{ background: colors.bgCard, border: `1px solid ${colors.border}`, borderRadius: 14, padding: 20 }}>
                 <h3 style={{ fontSize: 14, fontWeight: 600, color: colors.text, marginBottom: 14 }}>Cost by Service</h3>

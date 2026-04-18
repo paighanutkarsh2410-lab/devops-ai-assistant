@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import DashboardShell from '@/components/DashboardShell';
 import { colors } from '@/lib/theme';
+import { useBreakpoint } from '@/lib/useMediaQuery';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -38,6 +39,7 @@ function Card({ title, children, style }: { title: string; children: React.React
 }
 
 export default function ChaosPage() {
+  const { isMobile } = useBreakpoint();
   const [experiments, setExperiments] = useState<any[]>([]);
   const [resilience, setResilience] = useState<any>(null);
   const [history, setHistory] = useState<any[]>([]);
@@ -77,9 +79,9 @@ export default function ChaosPage() {
 
   return (
     <DashboardShell>
-      <div style={{ padding: 32, maxWidth: 1400, margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px 14px' : 32, maxWidth: 1400, margin: '0 auto' }}>
         <div className="slide-up" style={{ marginBottom: 28 }}>
-          <h1 style={{ fontSize: 26, fontWeight: 800, margin: '0 0 6px', background: 'linear-gradient(135deg, #f0f0f0, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Chaos Engineering</h1>
+          <h1 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 800, margin: '0 0 6px', background: 'linear-gradient(135deg, #f0f0f0, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Chaos Engineering</h1>
           <p style={{ color: colors.textMuted, fontSize: 14 }}>
             Controlled failure injection to test and improve system resilience
           </p>
@@ -89,7 +91,7 @@ export default function ChaosPage() {
         {resilience && resilience.experiments_run > 0 && (
           <div className="slide-up-d1" style={{
             background: colors.bgCard, borderRadius: 14, border: `1px solid ${colors.border}`,
-            padding: 24, marginBottom: 24, display: 'flex', justifyContent: 'space-around', textAlign: 'center', position: 'relative', overflow: 'hidden',
+            padding: isMobile ? 16 : 24, marginBottom: 24, display: 'flex', justifyContent: 'space-around', textAlign: 'center', position: 'relative', overflow: 'hidden', flexWrap: 'wrap' as const, gap: isMobile ? 12 : 0,
           }}>
             <div style={{ position: 'absolute', top: -20, left: '50%', transform: 'translateX(-50%)', width: 80, height: 40, background: 'radial-gradient(circle, rgba(59,130,246,0.15), transparent)', filter: 'blur(12px)', animation: 'breathe 4s ease-in-out infinite' }} />
             <div>

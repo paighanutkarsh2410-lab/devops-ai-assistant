@@ -8,6 +8,8 @@ import DashboardShell from '@/components/DashboardShell';
 import LiveMetrics from '@/components/LiveMetrics';
 import IncidentDetail from '@/components/IncidentDetail';
 import ActionLog from '@/components/ActionLog';
+import { useBreakpoint } from '@/lib/useMediaQuery';
+// PDF export removed
 
 interface User {
   id: string; email: string; full_name: string | null;
@@ -29,6 +31,7 @@ export default function DashboardPage() {
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
   const [hoveredStat, setHoveredStat] = useState<number | null>(null);
+  const { isMobile } = useBreakpoint();
 
   useEffect(() => { loadData(); }, []);
 
@@ -46,7 +49,7 @@ export default function DashboardPage() {
     } finally { setLoading(false); }
   };
 
-  const handleLogout = () => { localStorage.removeItem('token'); router.push('/login'); };
+  const handleLogout = () => { localStorage.removeItem('token'); router.push('/'); };
 
   if (loading) {
     return (
@@ -74,6 +77,26 @@ export default function DashboardPage() {
   const autoResolved = incidents.filter(i => i.auto_resolved).length;
   const criticals = incidents.filter(i => i.severity === 'critical' && i.status !== 'resolved').length;
 
+  // Computed widgets
+  const resolvedIncidents = incidents.filter(i => i.resolved_at && i.detected_at);
+  const avgMttr = resolvedIncidents.length > 0
+    ? resolvedIncidents.reduce((sum, i) => sum + (new Date(i.resolved_at!).getTime() - new Date(i.detected_at).getTime()), 0) / resolvedIncidents.length / 60000
+    : 0;
+
+  const serviceCounts = incidents.reduce<Record<string, number>>((acc, i) => {
+    const svc = i.service_name || 'unknown';
+    acc[svc] = (acc[svc] || 0) + 1;
+    return acc;
+  }, {});
+  const topServices = Object.entries(serviceCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+  const severityCounts = incidents.reduce<Record<string, number>>((acc, i) => {
+    acc[i.severity] = (acc[i.severity] || 0) + 1;
+    return acc;
+  }, {});
+
+  const autoRate = incidents.length > 0 ? Math.round((autoResolved / incidents.length) * 100) : 0;
+
   const stats = [
     { label: 'Total Incidents', value: incidents.length, color: '#3b82f6', icon: '📋', glow: 'rgba(59,130,246,0.15)' },
     { label: 'Open', value: open, color: '#f59e0b', icon: '⚠️', glow: 'rgba(245,158,11,0.15)' },
@@ -89,14 +112,14 @@ export default function DashboardPage() {
 
   return (
     <DashboardShell>
-      <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
+      <div id="dashboard-content" style={{ padding: isMobile ? '16px 14px' : 32, maxWidth: 1200, margin: '0 auto' }}>
         {/* ═══ Top Bar ═══ */}
         <div className="slide-up" style={{
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 36,
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: isMobile ? 20 : 36,
         }}>
           <div>
             <h1 style={{
-              fontSize: 30, fontWeight: 800, letterSpacing: '-0.5px', marginBottom: 6,
+              fontSize: isMobile ? 22 : 30, fontWeight: 800, letterSpacing: '-0.5px', marginBottom: 6,
               background: 'linear-gradient(135deg, #f0f0f0, #a1a1aa)',
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
             }}>
@@ -122,7 +145,7 @@ export default function DashboardPage() {
                 {criticals} Critical
               </div>
             )}
-            <button onClick={handleLogout}
+            <button data-tour="logout" onClick={handleLogout}
               style={{
                 padding: '8px 18px', borderRadius: 10,
                 border: '1px solid rgba(255,255,255,0.06)',
@@ -133,7 +156,7 @@ export default function DashboardPage() {
         </div>
 
         {/* ═══ Stats Grid ═══ */}
-        <div className="slide-up-d1" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
+        <div data-tour="stats" className="slide-up-d1" style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: isMobile ? 10 : 16, marginBottom: isMobile ? 20 : 32 }}>
           {stats.map((stat, i) => (
             <div
               key={stat.label}
@@ -145,7 +168,7 @@ export default function DashboardPage() {
                 borderRight: `1px solid ${hoveredStat === i ? 'rgba(255,255,255,0.08)' : colors.border}`,
                 borderBottom: `1px solid ${hoveredStat === i ? 'rgba(255,255,255,0.08)' : colors.border}`,
                 borderTop: `2px solid ${stat.color}`,
-                borderRadius: 18, padding: '24px 22px',
+                borderRadius: isMobile ? 14 : 18, padding: isMobile ? '16px 14px' : '24px 22px',
                 transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
                 transform: hoveredStat === i ? 'translateY(-3px)' : 'none',
                 boxShadow: hoveredStat === i ? `0 12px 40px ${stat.glow}` : 'none',
@@ -165,7 +188,7 @@ export default function DashboardPage() {
                     {stat.label}
                   </div>
                   <div style={{
-                    fontSize: 38, fontWeight: 900, color: stat.color, letterSpacing: '-1px',
+                    fontSize: isMobile ? 26 : 38, fontWeight: 900, color: stat.color, letterSpacing: '-1px',
                     textShadow: hoveredStat === i ? `0 0 20px ${stat.glow}` : 'none',
                     transition: 'text-shadow 0.3s',
                   }}>
@@ -182,8 +205,64 @@ export default function DashboardPage() {
           ))}
         </div>
 
+        {/* ═══ Insight Widgets ═══ */}
+        <div className="slide-up-d1" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: isMobile ? 10 : 16, marginBottom: isMobile ? 20 : 32 }}>
+          {/* MTTR */}
+          <div style={{
+            background: colors.bgCard, borderRadius: 14, border: `1px solid ${colors.border}`, padding: isMobile ? 14 : 20,
+            position: 'relative', overflow: 'hidden',
+          }}>
+            <div style={{ position: 'absolute', top: -15, right: -15, width: 60, height: 60, background: 'radial-gradient(circle, rgba(6,182,212,0.1), transparent)', filter: 'blur(10px)' }} />
+            <div style={{ fontSize: 11, color: '#52525b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Mean Time To Resolve</div>
+            <div style={{ fontSize: 28, fontWeight: 900, color: '#06b6d4', letterSpacing: '-1px' }}>
+              {avgMttr < 60 ? `${avgMttr.toFixed(0)}m` : `${(avgMttr / 60).toFixed(1)}h`}
+            </div>
+            <div style={{ fontSize: 11, color: '#3f3f46', marginTop: 4 }}>Avg across {resolvedIncidents.length} resolved</div>
+          </div>
+
+          {/* Top Services */}
+          <div style={{
+            background: colors.bgCard, borderRadius: 14, border: `1px solid ${colors.border}`, padding: isMobile ? 14 : 20,
+          }}>
+            <div style={{ fontSize: 11, color: '#52525b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10 }}>Top Affected Services</div>
+            {topServices.map(([svc, count]) => (
+              <div key={svc} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                <span style={{ fontSize: 12, color: '#a1a1aa' }}>{svc}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 60, height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.05)', overflow: 'hidden' }}>
+                    <div style={{ width: `${(count / (topServices[0]?.[1] || 1)) * 100}%`, height: '100%', borderRadius: 2, background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)' }} />
+                  </div>
+                  <span style={{ fontSize: 11, color: '#71717a', minWidth: 20, textAlign: 'right' }}>{count}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Severity + Auto Rate */}
+          <div style={{
+            background: colors.bgCard, borderRadius: 14, border: `1px solid ${colors.border}`, padding: isMobile ? 14 : 20,
+          }}>
+            <div style={{ fontSize: 11, color: '#52525b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10 }}>Severity Breakdown</div>
+            <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
+              {Object.entries(severityCounts).map(([sev, count]) => {
+                const sevColors: Record<string, string> = { critical: '#ef4444', high: '#f59e0b', medium: '#3b82f6', low: '#10b981' };
+                return (
+                  <div key={sev} style={{ flex: 1, textAlign: 'center', padding: '8px 4px', borderRadius: 8, background: `${sevColors[sev] || '#3b82f6'}10` }}>
+                    <div style={{ fontSize: 18, fontWeight: 800, color: sevColors[sev] || '#3b82f6' }}>{count}</div>
+                    <div style={{ fontSize: 9, color: '#71717a', textTransform: 'capitalize' }}>{sev}</div>
+                  </div>
+                );
+              })}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 10px', borderRadius: 8, background: 'rgba(139,92,246,0.06)' }}>
+              <span style={{ fontSize: 11, color: '#a1a1aa' }}>AI Auto-Resolution Rate</span>
+              <span style={{ fontSize: 16, fontWeight: 800, color: autoRate > 50 ? '#10b981' : '#f59e0b' }}>{autoRate}%</span>
+            </div>
+          </div>
+        </div>
+
         {/* ═══ Tabs ═══ */}
-        <div className="slide-up-d2" style={{
+        <div data-tour="tabs" className="slide-up-d2" style={{
           display: 'flex', gap: 4, marginBottom: 28, padding: 4,
           background: 'rgba(255,255,255,0.015)', borderRadius: 14,
           border: '1px solid rgba(255,255,255,0.04)',
@@ -208,7 +287,7 @@ export default function DashboardPage() {
         </div>
 
         {/* ═══ Content ═══ */}
-        <div className="slide-up-d3">
+        <div data-tour="incidents" className="slide-up-d3">
           {activeTab === 'remediations' ? (
             <ActionLog />
           ) : activeTab === 'metrics' ? (
@@ -255,11 +334,13 @@ export default function DashboardPage() {
                       onMouseEnter={() => setHoveredRow(incident.id)}
                       onMouseLeave={() => setHoveredRow(null)}
                       style={{
-                        padding: '16px 22px',
+                        padding: isMobile ? '12px 14px' : '16px 22px',
                         borderBottom: '1px solid rgba(255,255,255,0.03)',
                         cursor: 'pointer',
                         background: hovered ? 'rgba(59,130,246,0.03)' : 'transparent',
-                        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                        display: 'flex', flexDirection: isMobile ? 'column' : 'row',
+                        justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center',
+                        gap: isMobile ? 8 : 0,
                         transition: 'all 0.2s ease',
                         animation: `slide-up 0.4s ease-out ${idx * 0.03}s both`,
                         position: 'relative',
@@ -319,6 +400,7 @@ export default function DashboardPage() {
           onClose={() => setSelectedIncident(null)}
         />
       )}
+      {/* <OnboardingTour /> */}
     </DashboardShell>
   );
 }

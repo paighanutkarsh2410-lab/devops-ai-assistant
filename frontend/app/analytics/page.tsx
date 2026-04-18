@@ -6,9 +6,11 @@ import { api } from '@/lib/api';
 import DashboardShell from '@/components/DashboardShell';
 import { colors, card as cardStyle, btn, btnActive } from '@/lib/theme';
 import TrendChart from '@/components/TrendChart';
+import { useBreakpoint } from '@/lib/useMediaQuery';
 
 export default function AnalyticsPage() {
   const router = useRouter();
+  const { isMobile } = useBreakpoint();
   const [days, setDays] = useState(30);
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [dashboard, setDashboard] = useState<Record<string, unknown> | null>(null);
@@ -43,14 +45,14 @@ export default function AnalyticsPage() {
 
   return (
     <DashboardShell>
-      <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px 14px' : 32, maxWidth: 1200, margin: '0 auto' }}>
         {/* Header */}
-        <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
+        <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 12 : 0, marginBottom: 28 }}>
           <div>
-            <h1 style={{ fontSize: 26, fontWeight: 800, background: 'linear-gradient(135deg, #f0f0f0, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Analytics</h1>
+            <h1 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 800, background: 'linear-gradient(135deg, #f0f0f0, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Analytics</h1>
             <p style={{ fontSize: 13, color: colors.textMuted }}>MTTR, MTTD, reliability scores, and trend analysis</p>
           </div>
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {[7, 14, 30, 90].map(d => (
               <button key={d} onClick={() => setDays(d)} style={days === d ? btnActive : btn}>
                 {d}d
@@ -70,7 +72,7 @@ export default function AnalyticsPage() {
         ) : (
           <>
             {/* Key Metrics Row */}
-            <div className="slide-up-d1" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, marginBottom: 24 }}>
+            <div className="slide-up-d1" style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(5, 1fr)', gap: 12, marginBottom: 24 }}>
               {[
                 { label: 'MTTR', value: `${(mttr?.mttr_minutes as number)?.toFixed?.(1) || '0'}m`, sub: `${(mttr?.count as number) || 0} resolved`, color: '#3b82f6' },
                 { label: 'MTTD', value: `${(mttd?.mttd_minutes as number)?.toFixed?.(1) || '0'}m`, sub: `${(mttd?.count as number) || 0} detected`, color: '#8b5cf6' },
@@ -96,7 +98,7 @@ export default function AnalyticsPage() {
             </div>
 
             {/* Trend Charts */}
-            <div className="slide-up-d2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
+            <div className="slide-up-d2" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 12, marginBottom: 24 }}>
               <TrendChart
                 data={(trends as Record<string, number[]>)?.daily_counts || []}
                 title="Incident Frequency"
@@ -115,7 +117,7 @@ export default function AnalyticsPage() {
             </div>
 
             {/* Root Cause & Reliability */}
-            <div className="slide-up-d3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
+            <div className="slide-up-d3" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 12, marginBottom: 24 }}>
               {/* Root causes */}
               <div style={cardStyle}>
                 <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, color: colors.text }}>Root Cause Distribution</h3>
@@ -183,7 +185,7 @@ export default function AnalyticsPage() {
             {/* Effectiveness */}
             <div className="slide-up-d4" style={{...cardStyle, position: 'relative', overflow: 'hidden'}}>
               <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, color: colors.text }}>Automation Effectiveness</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: 16 }}>
                 {[
                   { label: 'Resolution Rate', value: `${(effectiveness?.resolution_rate as number)?.toFixed(1) || 0}%`, color: colors.success },
                   { label: 'Auto-Remediation', value: `${(effectiveness?.auto_remediation_rate as number)?.toFixed(1) || 0}%`, color: colors.accent },

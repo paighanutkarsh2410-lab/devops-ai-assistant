@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import DashboardShell from '@/components/DashboardShell';
 import { colors, btn } from '@/lib/theme';
 import LiveChart from '@/components/LiveChart';
+import { useBreakpoint } from '@/lib/useMediaQuery';
 
 interface DataPoint {
   time: string;
@@ -14,6 +15,7 @@ interface DataPoint {
 export default function LiveMonitoringPage() {
   const router = useRouter();
   const [metricData, setMetricData] = useState<Record<string, Record<string, DataPoint[]>>>({});
+  const { isMobile } = useBreakpoint();
 
   // Generate live data via polling
   useEffect(() => {
@@ -40,11 +42,11 @@ export default function LiveMonitoringPage() {
 
   return (
     <DashboardShell>
-      <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px 14px' : 32, maxWidth: 1200, margin: '0 auto' }}>
         {/* Header */}
-        <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
+        <div className="slide-up" style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? 12 : 0, marginBottom: isMobile ? 20 : 28 }}>
           <div>
-            <h1 style={{ fontSize: 26, fontWeight: 800, background: 'linear-gradient(135deg, #f0f0f0, #ef4444)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Live Monitoring</h1>
+            <h1 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 800, background: 'linear-gradient(135deg, #f0f0f0, #ef4444)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Live Monitoring</h1>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#6b7280' }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#16a34a', display: 'inline-block', boxShadow: '0 0 6px #16a34a', animation: 'pulse 2s infinite' }} />
               Live — updating every 2s
@@ -64,7 +66,7 @@ export default function LiveMonitoringPage() {
         {services.map((service, si) => (
           <div key={service} className={`slide-up-d${Math.min(si + 1, 4)}`} style={{ marginBottom: 32 }}>
             <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 12, color: colors.text }}>{service}</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: 12 }}>
               <LiveChart
                 title="CPU"
                 data={metricData[service]?.cpu || []}

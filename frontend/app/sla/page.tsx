@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 import { colors } from '@/lib/theme';
 import DashboardShell from '@/components/DashboardShell';
+import { useBreakpoint } from '@/lib/useMediaQuery';
 
 interface SLAStatus {
   service_name: string;
@@ -28,6 +29,7 @@ interface SLAConfig {
 }
 
 export default function SLAPage() {
+  const { isMobile } = useBreakpoint();
   const [statuses, setStatuses] = useState<SLAStatus[]>([]);
   const [configs, setConfigs] = useState<SLAConfig[]>([]);
   const [showAdd, setShowAdd] = useState(false);
@@ -73,13 +75,13 @@ export default function SLAPage() {
 
   return (
     <DashboardShell>
-      <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
-        <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
+      <div style={{ padding: isMobile ? '16px 14px' : 32, maxWidth: 1200, margin: '0 auto' }}>
+        <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 12 : 0, marginBottom: 28 }}>
           <div>
-            <h1 style={{ fontSize: 26, fontWeight: 800, background: 'linear-gradient(135deg, #f0f0f0, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>SLA Tracking</h1>
+            <h1 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 800, background: 'linear-gradient(135deg, #f0f0f0, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>SLA Tracking</h1>
             <p style={{ fontSize: 13, color: colors.textMuted }}>Uptime targets, error budgets, and breach alerts</p>
           </div>
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {[7, 30, 90].map(d => (
               <button key={d} onClick={() => setDays(d)} style={{
                 padding: '6px 14px', borderRadius: 8, fontSize: 12, cursor: 'pointer', border: 'none',
@@ -99,7 +101,7 @@ export default function SLAPage() {
 
           <div style={{
             background: colors.bgCard, border: `1px solid ${colors.border}`, borderRadius: 14,
-            padding: 18, marginBottom: 16, display: 'flex', gap: 12, alignItems: 'end',
+            padding: 18, marginBottom: 16, display: 'flex', gap: 12, alignItems: 'end', flexWrap: 'wrap' as const,
           }}>
             <div>
               <label style={{ fontSize: 11, color: colors.textMuted, display: 'block', marginBottom: 4 }}>Service</label>
@@ -121,7 +123,7 @@ export default function SLAPage() {
         )}
 
         {/* Stats */}
-        <div className="slide-up-d1" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 24 }}>
+        <div className="slide-up-d1" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: 14, marginBottom: 24 }}>
           {[
             { label: 'SLA Compliance', value: overallTotal > 0 ? `${overallMet}/${overallTotal}` : 'N/A', color: overallMet === overallTotal && overallTotal > 0 ? colors.success : colors.danger, sub: 'services meeting SLA' },
             { label: 'Active Breaches', value: statuses.reduce((sum, s) => sum + s.breaches.length, 0), color: colors.danger, sub: 'across all services' },
@@ -166,7 +168,7 @@ export default function SLAPage() {
                   <span style={{ fontSize: 12, color: colors.textDim }}>Target: {s.target_uptime}% uptime</span>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16, marginBottom: 14 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(3, 1fr)' : 'repeat(5, 1fr)', gap: isMobile ? 8 : 16, marginBottom: 14 }}>
                   {[
                     { label: 'Uptime', value: `${s.uptime_percent.toFixed(3)}%`, color: s.uptime_percent >= s.target_uptime ? colors.success : colors.danger },
                     { label: 'Downtime', value: `${s.total_downtime_minutes.toFixed(1)}m`, color: colors.text },

@@ -366,6 +366,29 @@ body {
   input, select, textarea {
     font-size: 16px !important; /* Prevents iOS zoom on focus */
   }
+
+  /* Force all dashboard grids to responsive columns */
+  [style*="gridTemplateColumns: 'repeat(4"] > *,
+  [style*="gridTemplateColumns: 'repeat(3"] > * {
+    min-width: 0;
+  }
+
+  /* Prevent horizontal overflow on all pages */
+  main {
+    overflow-x: hidden;
+  }
+
+  /* Make dependency graph and wide content scroll */
+  [style*="textAlign: 'center'"] {
+    overflow-x: auto;
+  }
+}
+
+/* PWA standalone mode — remove bottom padding since bottom bar is hidden */
+@media (display-mode: standalone) {
+  main[role="main"] {
+    padding-bottom: 0 !important;
+  }
 }
 
 /* Safe area padding for notched devices */

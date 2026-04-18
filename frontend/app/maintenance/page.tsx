@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import DashboardShell from '@/components/DashboardShell';
 import { colors } from '@/lib/theme';
+import { useBreakpoint } from '@/lib/useMediaQuery';
 
 interface MaintenanceWindow {
   id: string;
@@ -22,6 +23,7 @@ interface MaintenanceWindow {
 
 export default function MaintenancePage() {
   const router = useRouter();
+  const { isMobile } = useBreakpoint();
   const [windows, setWindows] = useState<MaintenanceWindow[]>([]);
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState({
@@ -85,10 +87,10 @@ export default function MaintenancePage() {
 
   return (
     <DashboardShell>
-      <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
-        <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
+      <div style={{ padding: isMobile ? '16px 14px' : 32, maxWidth: 1200, margin: '0 auto' }}>
+        <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 12 : 0, marginBottom: 28 }}>
           <div>
-            <h1 style={{ fontSize: 26, fontWeight: 800, background: 'linear-gradient(135deg, #f0f0f0, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Maintenance Windows</h1>
+            <h1 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 800, background: 'linear-gradient(135deg, #f0f0f0, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Maintenance Windows</h1>
             <p style={{ color: colors.textMuted, fontSize: 14 }}>Schedule and manage planned downtime</p>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
@@ -111,7 +113,7 @@ export default function MaintenancePage() {
         {showCreate && (
           <div style={{ ...glassCard, marginBottom: 16 }}>
             <h2 style={{ fontSize: 14, fontWeight: 600, marginBottom: 10, color: colors.text }}>Schedule Maintenance</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 10, marginBottom: 12 }}>
               <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="Title *"
                 style={inputStyle} />
               <input value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} placeholder="Description"
@@ -139,7 +141,7 @@ export default function MaintenancePage() {
         )}
 
         {/* Summary */}
-        <div className="slide-up-d1" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 24 }}>
+        <div className="slide-up-d1" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: 12, marginBottom: 24 }}>
           <div style={{...glassCard, position: 'relative', overflow: 'hidden'}}>
             <div style={{ position: 'absolute', top: -20, left: '50%', transform: 'translateX(-50%)', width: 80, height: 40, background: 'radial-gradient(circle, rgba(59,130,246,0.15), transparent)', filter: 'blur(12px)', animation: 'breathe 4s ease-in-out infinite' }} />
             <div style={{ fontSize: 11, color: colors.textMuted }}>Upcoming</div>

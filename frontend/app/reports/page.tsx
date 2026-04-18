@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import DashboardShell from '@/components/DashboardShell';
 import { colors } from '@/lib/theme';
+// PDF export removed
+import { useBreakpoint } from '@/lib/useMediaQuery';
 
 interface Widget {
   type: string;
@@ -42,6 +44,7 @@ const WIDGET_TYPES = [
 
 export default function ReportsPage() {
   const router = useRouter();
+  const { isMobile } = useBreakpoint();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [presets, setPresets] = useState<Preset[]>([]);
   const [showBuilder, setShowBuilder] = useState(false);
@@ -136,11 +139,11 @@ export default function ReportsPage() {
 
   return (
     <DashboardShell>
-      <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
+      <div id="reports-content" style={{ padding: isMobile ? '16px 14px' : 32, maxWidth: 1200, margin: '0 auto' }}>
         {/* Header */}
-        <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
+        <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 12 : 0, marginBottom: 28 }}>
           <div>
-            <h1 style={{ fontSize: 26, fontWeight: 800, background: 'linear-gradient(135deg, #f0f0f0, #f59e0b)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Report Builder</h1>
+            <h1 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 800, background: 'linear-gradient(135deg, #f0f0f0, #f59e0b)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Report Builder</h1>
             <p style={{ color: colors.textMuted, fontSize: 14 }}>Create custom reports with drag-and-drop widgets</p>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
@@ -163,7 +166,7 @@ export default function ReportsPage() {
         {showBuilder && (
           <div className="slide-up-d1" style={{ ...glassCard, marginBottom: 24 }}>
             <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, color: colors.text }}>Build New Report</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 12, marginBottom: 16 }}>
               <input value={builderName} onChange={e => setBuilderName(e.target.value)}
                 placeholder="Report name" style={inputStyle} />
               <input value={builderDesc} onChange={e => setBuilderDesc(e.target.value)}
@@ -239,7 +242,7 @@ export default function ReportsPage() {
 
         {/* Presets */}
         <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, color: colors.text }}>Report Presets</h2>
-        <div className="slide-up-d1" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 32 }}>
+        <div className="slide-up-d1" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: 12, marginBottom: 32 }}>
           {presets.map((p, i) => (
             <div key={i} style={{...glassCard, position: 'relative', overflow: 'hidden', borderTop: '2px solid #f59e0b'}}>
               <div style={{ position: 'absolute', top: -20, left: '50%', transform: 'translateX(-50%)', width: 80, height: 40, background: 'radial-gradient(circle, rgba(245,158,11,0.15), transparent)', filter: 'blur(12px)', animation: 'breathe 4s ease-in-out infinite' }} />
@@ -274,7 +277,7 @@ export default function ReportsPage() {
             No custom reports yet. Create one above or use a preset.
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 32 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 12, marginBottom: 32 }}>
             {templates.map(t => (
               <div key={t.id} style={glassCard}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: 8 }}>
@@ -325,7 +328,7 @@ export default function ReportsPage() {
                 Close
               </button>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 12 }}>
               {((generatedReport as Record<string, unknown[]>).widgets || []).map((w: unknown, i: number) => {
                 const widget = w as { widget: Widget; data: Record<string, unknown> };
                 return (

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import DashboardShell from '@/components/DashboardShell';
 import { colors, btn, btnPrimary, input as inputStyle } from '@/lib/theme';
+import { useBreakpoint } from '@/lib/useMediaQuery';
 
 interface AvailableIntegration {
   name: string;
@@ -29,6 +30,7 @@ interface ConnectedIntegration {
 
 export default function IntegrationsPage() {
   const router = useRouter();
+  const { isMobile } = useBreakpoint();
   const [available, setAvailable] = useState<AvailableIntegration[]>([]);
   const [connected, setConnected] = useState<ConnectedIntegration[]>([]);
   const [configuring, setConfiguring] = useState<string | null>(null);
@@ -100,10 +102,10 @@ export default function IntegrationsPage() {
 
   return (
     <DashboardShell>
-      <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
-        <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
+      <div style={{ padding: isMobile ? '16px 14px' : 32, maxWidth: 1200, margin: '0 auto' }}>
+        <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 12 : 0, marginBottom: 28 }}>
           <div>
-            <h1 style={{ fontSize: 26, fontWeight: 800, margin: 0, background: 'linear-gradient(135deg, #f0f0f0, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Integrations</h1>
+            <h1 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 800, margin: 0, background: 'linear-gradient(135deg, #f0f0f0, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Integrations</h1>
             <p style={{ color: colors.textMuted, fontSize: 13, margin: '4px 0 0' }}>Connect third-party tools to your DevOps workflow</p>
           </div>
           <button onClick={() => router.push('/dashboard')} style={btn}>
@@ -115,7 +117,7 @@ export default function IntegrationsPage() {
         {connected.length > 0 && (
           <>
             <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, color: colors.text }}>Connected ({connected.length})</h2>
-            <div className="slide-up-d1" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 32 }}>
+            <div className="slide-up-d1" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: 12, marginBottom: 32 }}>
               {connected.map(c => {
                 const avail = available.find(a => a.name === c.name);
                 return (
@@ -217,7 +219,7 @@ export default function IntegrationsPage() {
 
         {/* Available */}
         <h2 className="slide-up-d2" style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, color: colors.text }}>Available Integrations</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: 12 }}>
           {available.map(a => {
             const isConnected = connectedNames.has(a.name);
             const color = typeColor[a.type] || colors.textMuted;

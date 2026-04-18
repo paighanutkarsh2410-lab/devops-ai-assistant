@@ -7,8 +7,10 @@ import DashboardShell from '@/components/DashboardShell';
 import MetricCard from '@/components/MetricCard';
 import HealthScore from '@/components/HealthScore';
 import TrendChart from '@/components/TrendChart';
+import { useBreakpoint } from '@/lib/useMediaQuery';
 
 export default function ExecutivePage() {
+  const { isMobile } = useBreakpoint();
   const [analytics, setAnalytics] = useState<Record<string, unknown> | null>(null);
   const [roi, setRoi] = useState<Record<string, unknown> | null>(null);
   const [trends, setTrends] = useState<Record<string, unknown> | null>(null);
@@ -56,16 +58,16 @@ export default function ExecutivePage() {
 
   return (
     <DashboardShell>
-      <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px 14px' : 32, maxWidth: 1200, margin: '0 auto' }}>
         <div className="slide-up" style={{ marginBottom: 28 }}>
-          <h1 style={{ fontSize: 26, fontWeight: 800, background: 'linear-gradient(135deg, #f0f0f0, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Executive Dashboard</h1>
+          <h1 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 800, background: 'linear-gradient(135deg, #f0f0f0, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Executive Dashboard</h1>
           <p style={{ fontSize: 13, color: colors.textMuted }}>System health, business impact, and ROI — last 30 days</p>
         </div>
 
         {/* Health Scores */}
         <div className="slide-up-d1" style={{
           background: colors.bgCard, border: `1px solid ${colors.border}`, borderRadius: 14,
-          padding: 24, marginBottom: 24, display: 'flex', justifyContent: 'space-around', alignItems: 'center',
+          padding: isMobile ? 16 : 24, marginBottom: 24, display: 'flex', justifyContent: 'space-around', alignItems: 'center', flexWrap: 'wrap' as const, gap: isMobile ? 16 : 0,
           position: 'relative', overflow: 'hidden',
         }}>
           <div style={{ position: 'absolute', top: -30, left: '50%', transform: 'translateX(-50%)', width: 200, height: 60, background: 'radial-gradient(circle, rgba(139,92,246,0.12), transparent)', filter: 'blur(20px)', animation: 'breathe 4s ease-in-out infinite' }} />
@@ -77,7 +79,7 @@ export default function ExecutivePage() {
         </div>
 
         {/* Key Metrics */}
-        <div className="slide-up-d2" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, marginBottom: 24 }}>
+        <div className="slide-up-d2" style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(5, 1fr)', gap: 12, marginBottom: 24 }}>
           <MetricCard title="Total Incidents" value={effectiveness?.total_incidents || 0} subtitle="last 30 days"
             trend={(freq?.trend as string) === 'decreasing' ? 'up' : (freq?.trend as string) === 'increasing' ? 'down' : 'stable'}
             trendValue={`${freq?.trend_pct || 0}%`} icon="📋" />
@@ -92,7 +94,7 @@ export default function ExecutivePage() {
         </div>
 
         {/* Charts */}
-        <div className="slide-up-d3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 24 }}>
+        <div className="slide-up-d3" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14, marginBottom: 24 }}>
           <TrendChart data={((trends as Record<string, number[]>)?.daily_counts) || []}
             title="Incident Trend (30d)" color="#3b82f6" height={180} trend={(trends as Record<string, string>)?.trend} />
           <div style={{ background: colors.bgCard, border: `1px solid ${colors.border}`, borderRadius: 14, padding: 20 }}>
@@ -127,7 +129,7 @@ export default function ExecutivePage() {
         </div>
 
         {/* SLA + Business Impact */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14 }}>
           <div style={{ background: colors.bgCard, border: `1px solid ${colors.border}`, borderRadius: 14, padding: 20 }}>
             <h3 style={{ fontSize: 14, fontWeight: 600, color: colors.text, marginBottom: 14 }}>SLA Status</h3>
             {slaStatus.length === 0 ? (

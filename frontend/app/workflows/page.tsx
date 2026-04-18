@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import DashboardShell from '@/components/DashboardShell';
 import { colors } from '@/lib/theme';
+import { useBreakpoint } from '@/lib/useMediaQuery';
 
 interface Workflow {
   id: string;
@@ -27,6 +28,7 @@ interface Execution {
 
 export default function WorkflowsPage() {
   const router = useRouter();
+  const { isMobile } = useBreakpoint();
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
   const [templates, setTemplates] = useState<Workflow[]>([]);
   const [selectedExecs, setSelectedExecs] = useState<Record<string, Execution[]>>({});
@@ -91,10 +93,10 @@ export default function WorkflowsPage() {
 
   return (
     <DashboardShell>
-      <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
-        <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
+      <div style={{ padding: isMobile ? '16px 14px' : 32, maxWidth: 1200, margin: '0 auto' }}>
+        <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 12 : 0, marginBottom: 28 }}>
           <div>
-            <h1 style={{ fontSize: 26, fontWeight: 800, margin: 0, background: 'linear-gradient(135deg, #f0f0f0, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Workflows</h1>
+            <h1 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 800, margin: 0, background: 'linear-gradient(135deg, #f0f0f0, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Workflows</h1>
             <p style={{ color: colors.textMuted, fontSize: 13, marginTop: 6 }}>Automate incident response with custom workflows</p>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
@@ -114,7 +116,7 @@ export default function WorkflowsPage() {
 
         {/* Templates */}
         <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, color: colors.text }}>Templates</h2>
-        <div className="slide-up-d1" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 32 }}>
+        <div className="slide-up-d1" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: 12, marginBottom: 32 }}>
           {templates.map((tpl, i) => (
             <div key={i} style={{...cardStyle, position: 'relative', overflow: 'hidden'}}>
               <div style={{ position: 'absolute', top: -20, left: '50%', transform: 'translateX(-50%)', width: 80, height: 40, background: 'radial-gradient(circle, rgba(59,130,246,0.15), transparent)', filter: 'blur(12px)', animation: 'breathe 4s ease-in-out infinite' }} />

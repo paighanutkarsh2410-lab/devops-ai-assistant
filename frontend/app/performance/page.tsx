@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import DashboardShell from '@/components/DashboardShell';
 import { colors, card as cardStyle, btn, btnActive } from '@/lib/theme';
+import { useBreakpoint } from '@/lib/useMediaQuery';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -22,6 +23,7 @@ export default function PerformancePage() {
   const [services, setServices] = useState<ServiceHealth[]>([]);
   const [selectedService, setSelectedService] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState('1h');
+  const { isMobile } = useBreakpoint();
 
   // Generate demo service data
   useEffect(() => {
@@ -86,11 +88,11 @@ export default function PerformancePage() {
 
   return (
     <DashboardShell>
-      <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px 14px' : 32, maxWidth: 1200, margin: '0 auto' }}>
         {/* Header */}
-        <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
+        <div className="slide-up" style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? 12 : 0, marginBottom: isMobile ? 20 : 28 }}>
           <div>
-            <h1 style={{ fontSize: 26, fontWeight: 800, background: 'linear-gradient(135deg, #f0f0f0, #f59e0b)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Performance Monitoring</h1>
+            <h1 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 800, background: 'linear-gradient(135deg, #f0f0f0, #f59e0b)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Performance Monitoring</h1>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#6b7280' }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#16a34a', display: 'inline-block', boxShadow: '0 0 6px #16a34a', animation: 'pulse 2s infinite' }} />
               Live — updating every 5s
@@ -112,7 +114,7 @@ export default function PerformancePage() {
         </div>
 
         {/* System-wide stats */}
-        <div className="slide-up-d1" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
+        <div className="slide-up-d1" style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
           <div style={{...cardStyle, position: 'relative', overflow: 'hidden', borderTop: '2px solid #f59e0b'}}>
             <div style={{ position: 'absolute', top: -20, left: '50%', transform: 'translateX(-50%)', width: 80, height: 40, background: 'radial-gradient(circle, rgba(245,158,11,0.18), transparent)', filter: 'blur(12px)', animation: 'breathe 4s ease-in-out infinite' }} />
             <div style={{ fontSize: 12, color: colors.textMuted }}>Total Requests/s</div>
@@ -144,7 +146,7 @@ export default function PerformancePage() {
 
         {/* Service Grid */}
         <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 12, color: colors.text }}>Services</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, marginBottom: 32 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: 12, marginBottom: 32 }}>
           {services.map(svc => (
             <div
               key={svc.name}

@@ -4,9 +4,11 @@ import { useTheme, THEME_PRESETS, ThemeMode } from '@/lib/theme-context';
 import ThemeToggle from '@/components/ThemeToggle';
 import DashboardShell from '@/components/DashboardShell';
 import { colors as themeColors } from '@/lib/theme';
+import { useBreakpoint } from '@/lib/useMediaQuery';
 
 export default function ThemeSettingsPage() {
   const { theme, preset, colors, resolvedMode, setTheme, setPreset } = useTheme();
+  const { isMobile } = useBreakpoint();
 
   const modes: { key: ThemeMode; icon: string; label: string; desc: string }[] = [
     { key: 'light', icon: '\u{2600}\uFE0F', label: 'Light', desc: 'Bright theme for daytime use' },
@@ -27,10 +29,10 @@ export default function ThemeSettingsPage() {
 
   return (
     <DashboardShell>
-      <div style={{ padding: 32, maxWidth: 900, margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px 14px' : 32, maxWidth: 900, margin: '0 auto' }}>
         <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
           <div>
-            <h1 style={{ fontSize: 26, fontWeight: 800, margin: 0, background: 'linear-gradient(135deg, #f0f0f0, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            <h1 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 800, margin: 0, background: 'linear-gradient(135deg, #f0f0f0, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               Theme Settings
             </h1>
             <p style={{ color: themeColors.textMuted, fontSize: 13, margin: '4px 0 0' }}>
@@ -54,7 +56,7 @@ export default function ThemeSettingsPage() {
           <h2 style={{ fontSize: 16, fontWeight: 600, color: themeColors.text, margin: '0 0 14px' }}>
             Appearance Mode
           </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: 12 }}>
             {modes.map((m) => (
               <button
                 key={m.key}
@@ -96,7 +98,7 @@ export default function ThemeSettingsPage() {
           <p style={{ color: themeColors.textMuted, fontSize: 12, margin: '0 0 14px' }}>
             {resolvedMode === 'dark' ? 'Choose a color scheme for dark mode' : 'Switch to dark mode to select a color theme'}
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: 12 }}>
             {THEME_PRESETS.map((p) => (
               <button
                 key={p.key}
@@ -135,7 +137,7 @@ export default function ThemeSettingsPage() {
           <h2 style={{ fontSize: 16, fontWeight: 600, color: themeColors.text, margin: '0 0 14px' }}>
             Color Palette Preview
           </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: 12 }}>
             {colorSamples.map((s) => (
               <div key={s.label} style={{ textAlign: 'center' as const }}>
                 <div

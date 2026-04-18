@@ -13,25 +13,25 @@ interface CommandItem {
   category?: string;
 }
 
-const DEFAULT_COMMANDS: CommandItem[] = [
-  { id: 'dashboard', label: 'Go to Dashboard', icon: '\u{1F4CA}', category: 'Navigation', action: () => {}, shortcut: 'G D' },
-  { id: 'incidents', label: 'View Incidents', icon: '\u{1F6A8}', category: 'Navigation', action: () => {} },
-  { id: 'analytics', label: 'Analytics', icon: '\u{1F4C8}', category: 'Navigation', action: () => {} },
-  { id: 'sla', label: 'SLA Dashboard', icon: '\u{1F3AF}', category: 'Navigation', action: () => {} },
-  { id: 'costs', label: 'Cost Analysis', icon: '\u{1F4B0}', category: 'Navigation', action: () => {} },
-  { id: 'visualizations', label: 'Visualizations', icon: '\u{1F4CA}', category: 'Navigation', action: () => {} },
-  { id: 'workflows', label: 'Workflows', icon: '\u{26A1}', category: 'Navigation', action: () => {} },
-  { id: 'runbooks', label: 'Runbooks', icon: '\u{1F4D6}', category: 'Navigation', action: () => {} },
-  { id: 'chaos', label: 'Chaos Engineering', icon: '\u{1F9EA}', category: 'Navigation', action: () => {} },
-  { id: 'integrations', label: 'Integrations', icon: '\u{1F517}', category: 'Navigation', action: () => {} },
-  { id: 'maintenance', label: 'Maintenance', icon: '\u{1F527}', category: 'Navigation', action: () => {} },
-  { id: 'settings', label: 'Theme Settings', icon: '\u{1F3A8}', category: 'Settings', action: () => {} },
-  { id: 'notifications', label: 'Notification Settings', icon: '\u{1F514}', category: 'Settings', action: () => {} },
-  { id: 'reports', label: 'Reports', icon: '\u{1F4C4}', category: 'Navigation', action: () => {} },
-  { id: 'predictions', label: 'Predictions', icon: '\u{1F52E}', category: 'Navigation', action: () => {} },
-  { id: 'executive', label: 'Executive Dashboard', icon: '\u{1F451}', category: 'Navigation', action: () => {} },
-  { id: 'live', label: 'Live Monitor', icon: '\u{1F4E1}', category: 'Navigation', action: () => {} },
-  { id: 'chat', label: 'AI Chat', icon: '\u{1F916}', category: 'Actions', action: () => {} },
+const DEFAULT_COMMANDS: Omit<CommandItem, 'action'>[] = [
+  { id: 'dashboard', label: 'Go to Dashboard', icon: '\u{1F4CA}', category: 'Navigation', shortcut: 'G D' },
+  { id: 'incidents', label: 'View Incidents', icon: '\u{1F6A8}', category: 'Navigation' },
+  { id: 'analytics', label: 'Analytics', icon: '\u{1F4C8}', category: 'Navigation' },
+  { id: 'sla', label: 'SLA Dashboard', icon: '\u{1F3AF}', category: 'Navigation' },
+  { id: 'costs', label: 'Cost Analysis', icon: '\u{1F4B0}', category: 'Navigation' },
+  { id: 'visualizations', label: 'Visualizations', icon: '\u{1F4CA}', category: 'Navigation' },
+  { id: 'workflows', label: 'Workflows', icon: '\u{26A1}', category: 'Navigation' },
+  { id: 'runbooks', label: 'Runbooks', icon: '\u{1F4D6}', category: 'Navigation' },
+  { id: 'chaos', label: 'Chaos Engineering', icon: '\u{1F9EA}', category: 'Navigation' },
+  { id: 'integrations', label: 'Integrations', icon: '\u{1F517}', category: 'Navigation' },
+  { id: 'maintenance', label: 'Maintenance', icon: '\u{1F527}', category: 'Navigation' },
+  { id: 'settings', label: 'Theme Settings', icon: '\u{1F3A8}', category: 'Settings' },
+  { id: 'notifications', label: 'Notification Settings', icon: '\u{1F514}', category: 'Settings' },
+  { id: 'reports', label: 'Reports', icon: '\u{1F4C4}', category: 'Navigation' },
+  { id: 'predictions', label: 'Predictions', icon: '\u{1F52E}', category: 'Navigation' },
+  { id: 'executive', label: 'Executive Dashboard', icon: '\u{1F451}', category: 'Navigation' },
+  { id: 'live', label: 'Live Monitor', icon: '\u{1F4E1}', category: 'Navigation' },
+  { id: 'chat', label: 'AI Chat', icon: '\u{1F916}', category: 'Actions' },
 ];
 
 const ROUTE_MAP: Record<string, string> = {
@@ -62,12 +62,19 @@ export default function CommandPalette({ extraCommands = [] }: { extraCommands?:
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  const commands: CommandItem[] = [...DEFAULT_COMMANDS, ...extraCommands].map((cmd) => ({
-    ...cmd,
-    action: cmd.action.toString() === '() => {}' && ROUTE_MAP[cmd.id]
-      ? () => { router.push(ROUTE_MAP[cmd.id]); setOpen(false); }
-      : () => { cmd.action(); setOpen(false); },
-  }));
+  const commands: CommandItem[] = [
+    ...DEFAULT_COMMANDS.map((cmd) => ({
+      ...cmd,
+      action: () => {
+        if (ROUTE_MAP[cmd.id]) router.push(ROUTE_MAP[cmd.id]);
+        setOpen(false);
+      },
+    })),
+    ...extraCommands.map((cmd) => ({
+      ...cmd,
+      action: () => { cmd.action(); setOpen(false); },
+    })),
+  ];
 
   const filtered = query
     ? commands.filter((c) =>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 
 interface NavItem {
@@ -65,8 +65,18 @@ const BOTTOM_BAR: NavItem[] = [
 
 export default function MobileNav() {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+
+  useEffect(() => {
+    // Detect if running as installed PWA (standalone mode)
+    const mq = window.matchMedia('(display-mode: standalone)');
+    setIsStandalone(mq.matches || (navigator as unknown as { standalone?: boolean }).standalone === true);
+    const handler = (e: MediaQueryListEvent) => setIsStandalone(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
 
   const navigate = (path: string) => {
     router.push(path);
@@ -168,27 +178,48 @@ export default function MobileNav() {
         </div>
       )}
 
-      {/* Bottom tab bar */}
-      <div
-        style={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: 56,
-          background: '#0f172a',
-          borderTop: '1px solid #1e293b',
-          display: 'flex',
-          justifyContent: 'space-around',
-          alignItems: 'center',
-          zIndex: 1000,
-          paddingBottom: 'env(safe-area-inset-bottom, 0)',
-        }}
-      >
-        {BOTTOM_BAR.map((item) => (
+      {/* Bottom tab bar — hidden in PWA standalone mode */}
+      {!isStandalone && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: 56,
+            background: '#0f172a',
+            borderTop: '1px solid #1e293b',
+            display: 'flex',
+            justifyContent: 'space-around',
+            alignItems: 'center',
+            zIndex: 1000,
+            paddingBottom: 'env(safe-area-inset-bottom, 0)',
+          }}
+        >
+          {BOTTOM_BAR.map((item) => (
+            <button
+              key={item.path}
+              onClick={() => navigate(item.path)}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 2,
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: pathname === item.path ? '#3b82f6' : '#64748b',
+                fontSize: 10,
+                padding: '4px 12px',
+                minWidth: 60,
+              }}
+            >
+              <span style={{ fontSize: 20 }}>{item.icon}</span>
+              {item.label}
+            </button>
+          ))}
           <button
-            key={item.path}
-            onClick={() => navigate(item.path)}
+            onClick={() => setDrawerOpen(true)}
             style={{
               display: 'flex',
               flexDirection: 'column',
@@ -197,36 +228,17 @@ export default function MobileNav() {
               background: 'none',
               border: 'none',
               cursor: 'pointer',
-              color: pathname === item.path ? '#3b82f6' : '#64748b',
+              color: '#64748b',
               fontSize: 10,
               padding: '4px 12px',
               minWidth: 60,
             }}
           >
-            <span style={{ fontSize: 20 }}>{item.icon}</span>
-            {item.label}
+            <span style={{ fontSize: 20 }}>{'\u2026'}</span>
+            More
           </button>
-        ))}
-        <button
-          onClick={() => setDrawerOpen(true)}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 2,
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            color: '#64748b',
-            fontSize: 10,
-            padding: '4px 12px',
-            minWidth: 60,
-          }}
-        >
-          <span style={{ fontSize: 20 }}>{'\u2026'}</span>
-          More
-        </button>
-      </div>
+        </div>
+      )}
 
       <style>{`
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }

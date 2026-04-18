@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import DashboardShell from '@/components/DashboardShell';
 import { colors, btn, btnPrimary, card as cardStyle, glassCard, severityColor } from '@/lib/theme';
+import { useBreakpoint } from '@/lib/useMediaQuery';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -20,6 +21,7 @@ interface Notification {
 
 export default function NotificationsPage() {
   const router = useRouter();
+  const { isMobile } = useBreakpoint();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [filter, setFilter] = useState<string>('all');
 
@@ -51,11 +53,11 @@ export default function NotificationsPage() {
 
   return (
     <DashboardShell>
-      <div style={{ padding: 32, maxWidth: 800, margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px 14px' : 32, maxWidth: 800, margin: '0 auto' }}>
         {/* Header */}
-        <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
+        <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 12 : 0, marginBottom: 28 }}>
           <div>
-            <h1 style={{ fontSize: 26, fontWeight: 800, margin: 0, background: 'linear-gradient(135deg, #f0f0f0, #06b6d4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Notifications</h1>
+            <h1 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 800, margin: 0, background: 'linear-gradient(135deg, #f0f0f0, #06b6d4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Notifications</h1>
             <p style={{ fontSize: 13, color: colors.textMuted, margin: '4px 0 0' }}>Stay updated on alerts and incidents</p>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>

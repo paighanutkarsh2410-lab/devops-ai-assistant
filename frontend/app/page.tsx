@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useBreakpoint } from '@/lib/useMediaQuery';
 
 // ═══════════════════════════════════════════════════════════
 // NEURAL NETWORK PARTICLE SYSTEM — Interactive connected nodes
@@ -329,6 +330,7 @@ export default function HomePage() {
   const [hoveredBtn, setHoveredBtn] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [scrollY, setScrollY] = useState(0);
+  const { isMobile } = useBreakpoint();
 
   useEffect(() => { setMounted(true); }, []);
   useEffect(() => {
@@ -394,7 +396,7 @@ export default function HomePage() {
 
       {/* ═══ NAVIGATION ═══ */}
       <nav className={mounted ? 'slide-up' : ''} style={{
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        display: isMobile ? 'none' : 'flex', justifyContent: 'space-between', alignItems: 'center',
         padding: '16px 48px', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
         background: scrollY > 50 ? 'rgba(3,3,8,0.8)' : 'transparent',
         backdropFilter: scrollY > 50 ? 'blur(20px)' : 'none',
@@ -455,12 +457,15 @@ export default function HomePage() {
 
       {/* ═══ HERO SECTION WITH 3D SPHERE ═══ */}
       <section style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: '160px 48px 60px', maxWidth: 1200, margin: '0 auto',
-        position: 'relative', zIndex: 1, gap: 60, minHeight: '100vh',
+        display: 'flex', flexDirection: isMobile ? 'column' : 'row',
+        alignItems: 'center', justifyContent: 'center',
+        padding: isMobile ? '80px 20px 40px' : '160px 48px 60px',
+        maxWidth: 1200, margin: '0 auto',
+        position: 'relative', zIndex: 1, gap: isMobile ? 30 : 60,
+        minHeight: isMobile ? 'auto' : '100vh',
       }}>
         {/* Left — Text content */}
-        <div style={{ flex: 1, maxWidth: 580 }}>
+        <div style={{ flex: 1, maxWidth: isMobile ? '100%' : 580 }}>
           {/* Live status badge */}
           <div className={mounted ? 'slide-up' : ''} style={{
             display: 'inline-flex', alignItems: 'center', gap: 10,
@@ -480,7 +485,7 @@ export default function HomePage() {
           </div>
 
           <h1 className={mounted ? 'slide-up-d1' : ''} style={{
-            fontSize: 72, fontWeight: 900, lineHeight: 1.0, marginBottom: 24, letterSpacing: '-3px',
+            fontSize: isMobile ? 38 : 72, fontWeight: 900, lineHeight: 1.0, marginBottom: 24, letterSpacing: isMobile ? '-1.5px' : '-3px',
           }}>
             <span style={{
               display: 'block',
@@ -495,14 +500,14 @@ export default function HomePage() {
           </h1>
 
           <p className={mounted ? 'slide-up-d2' : ''} style={{
-            fontSize: 18, color: '#94a3b8', lineHeight: 1.8, marginBottom: 40,
+            fontSize: isMobile ? 14 : 18, color: '#94a3b8', lineHeight: 1.8, marginBottom: isMobile ? 28 : 40,
           }}>
             6 autonomous AI agents that monitor, diagnose, and remediate
             your infrastructure in real-time.{' '}
             <span style={{ color: '#cbd5e1', fontWeight: 600 }}>Zero human intervention.</span>
           </p>
 
-          <div className={mounted ? 'slide-up-d3' : ''} style={{ display: 'flex', gap: 16 }}>
+          <div className={mounted ? 'slide-up-d3' : ''} style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 12 : 16 }}>
             <button onClick={() => router.push('/login')}
               onMouseEnter={() => setHoveredBtn('hero-start')} onMouseLeave={() => setHoveredBtn(null)}
               style={{
@@ -538,12 +543,14 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Right — 3D Holographic Sphere */}
-        <div className={mounted ? 'fade-in' : ''} style={{
-          flex: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <HolographicSphere />
-        </div>
+        {/* Right — 3D Holographic Sphere (hidden on mobile) */}
+        {!isMobile && (
+          <div className={mounted ? 'fade-in' : ''} style={{
+            flex: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <HolographicSphere />
+          </div>
+        )}
       </section>
 
       {/* ═══ ANIMATED PIPELINE ═══ */}
@@ -552,8 +559,9 @@ export default function HomePage() {
         position: 'relative', zIndex: 1,
       }}>
         <div className={mounted ? 'slide-up-d4' : ''} style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-          padding: '24px 36px', borderRadius: 24,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          flexWrap: isMobile ? 'wrap' : 'nowrap', gap: isMobile ? 10 : 6,
+          padding: isMobile ? '20px 16px' : '24px 36px', borderRadius: 24,
           background: 'rgba(255,255,255,0.015)',
           border: '1px solid rgba(255,255,255,0.03)',
           backdropFilter: 'blur(10px)',
@@ -606,8 +614,8 @@ export default function HomePage() {
 
       {/* ═══ STATS ═══ */}
       <section style={{
-        display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16,
-        padding: '0 24px 100px', maxWidth: 1100, margin: '0 auto',
+        display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: isMobile ? 12 : 16,
+        padding: isMobile ? '0 16px 60px' : '0 24px 100px', maxWidth: 1100, margin: '0 auto',
         position: 'relative', zIndex: 1,
       }}>
         {[
@@ -617,7 +625,7 @@ export default function HomePage() {
           { value: '24', label: 'Autonomous', icon: '🌐', color: '#8b5cf6', suffix: '/7' },
         ].map((stat, i) => (
           <div key={i} style={{
-            textAlign: 'center', padding: '36px 24px', borderRadius: 24,
+            textAlign: 'center', padding: isMobile ? '24px 16px' : '36px 24px', borderRadius: isMobile ? 18 : 24,
             background: 'rgba(255,255,255,0.015)',
             border: '1px solid rgba(255,255,255,0.04)',
             animation: `scale-in 0.6s ease-out ${0.5 + i * 0.1}s both`,
@@ -633,7 +641,7 @@ export default function HomePage() {
             }} />
             <div style={{ fontSize: 28, marginBottom: 14, position: 'relative' }}>{stat.icon}</div>
             <div style={{
-              fontSize: 52, fontWeight: 900, letterSpacing: '-3px', position: 'relative',
+              fontSize: isMobile ? 32 : 52, fontWeight: 900, letterSpacing: isMobile ? '-1px' : '-3px', position: 'relative',
               color: stat.color,
               textShadow: `0 0 40px ${stat.color}30`,
             }}>
@@ -659,7 +667,7 @@ export default function HomePage() {
             background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           }}>CAPABILITIES</p>
-          <h2 style={{ fontSize: 52, fontWeight: 900, letterSpacing: '-2px', marginBottom: 16 }}>
+          <h2 style={{ fontSize: isMobile ? 30 : 52, fontWeight: 900, letterSpacing: isMobile ? '-1px' : '-2px', marginBottom: 16 }}>
             Six Agents.{' '}
             <span style={{
               background: 'linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899)',
@@ -673,7 +681,7 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: isMobile ? 16 : 20 }}>
           {features.map((f, i) => (
             <TiltCard key={i} gradient={f.gradient} delay={0.15 + i * 0.08} index={i}>
               <div style={{
@@ -738,8 +746,9 @@ export default function HomePage() {
           </div>
           {/* Code */}
           <div style={{
-            padding: '28px 32px', fontFamily: '"Geist Mono", "Fira Code", monospace',
-            fontSize: 13.5, lineHeight: 2.2, color: '#a1a1aa',
+            padding: isMobile ? '16px 12px' : '28px 32px', fontFamily: '"Geist Mono", "Fira Code", monospace',
+            fontSize: isMobile ? 11 : 13.5, lineHeight: 2.2, color: '#a1a1aa',
+            overflowX: 'auto',
           }}>
             <div style={{ animation: 'slide-in-left 0.6s ease-out 0.2s both' }}>
               <span style={{ color: '#c084fc' }}>class</span>{' '}
@@ -787,7 +796,8 @@ export default function HomePage() {
         textAlign: 'center', position: 'relative', zIndex: 1,
       }}>
         <div style={{
-          padding: '80px 60px', borderRadius: 32, position: 'relative', overflow: 'hidden',
+          padding: isMobile ? '40px 24px' : '80px 60px', borderRadius: isMobile ? 20 : 32,
+          position: 'relative', overflow: 'hidden',
           background: 'rgba(255,255,255,0.015)',
           border: '1px solid rgba(255,255,255,0.04)',
         }}>
@@ -808,8 +818,8 @@ export default function HomePage() {
           }} />
 
           <h2 style={{
-            fontSize: 48, fontWeight: 900, marginBottom: 20, position: 'relative',
-            letterSpacing: '-1.5px', lineHeight: 1.1,
+            fontSize: isMobile ? 28 : 48, fontWeight: 900, marginBottom: 20, position: 'relative',
+            letterSpacing: isMobile ? '-0.5px' : '-1.5px', lineHeight: 1.1,
           }}>
             Ready To Join A<br />
             <span style={{

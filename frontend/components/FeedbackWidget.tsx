@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
+import { useBreakpoint } from '@/lib/useMediaQuery';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -9,6 +10,42 @@ export default function FeedbackWidget() {
   const [form, setForm] = useState({ type: 'general', message: '', email: '' });
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
+  const { isMobile } = useBreakpoint();
+
+  // Draggable state
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const [initialized, setInitialized] = useState(false);
+  const dragging = useRef(false);
+  const dragOffset = useRef({ x: 0, y: 0 });
+  const btnRef = useRef<HTMLButtonElement>(null);
+
+  // Set initial position after mount
+  useEffect(() => {
+    setPos({ x: window.innerWidth - 72, y: window.innerHeight - 90 });
+    setInitialized(true);
+  }, []);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (!isMobile) return;
+    const touch = e.touches[0];
+    const rect = btnRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    dragOffset.current = { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
+    dragging.current = true;
+  }, [isMobile]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!dragging.current || !isMobile) return;
+    e.preventDefault();
+    const touch = e.touches[0];
+    const newX = Math.max(0, Math.min(window.innerWidth - 48, touch.clientX - dragOffset.current.x));
+    const newY = Math.max(0, Math.min(window.innerHeight - 48, touch.clientY - dragOffset.current.y));
+    setPos({ x: newX, y: newY });
+  }, [isMobile]);
+
+  const handleTouchEnd = useCallback(() => {
+    dragging.current = false;
+  }, []);
 
   const handleSubmit = async () => {
     if (!form.message.trim()) return;
@@ -31,31 +68,51 @@ export default function FeedbackWidget() {
     setTimeout(() => { setSubmitted(false); setOpen(false); setForm({ type: 'general', message: '', email: '' }); }, 2000);
   };
 
+  // Button position styles
+  const btnStyle: React.CSSProperties = isMobile && initialized
+    ? { position: 'fixed', left: pos.x, top: pos.y, zIndex: 9999, touchAction: 'none' }
+    : { position: 'fixed', bottom: 24, right: 24, zIndex: 9999 };
+
+  // Panel position — opens above or below the button depending on space
+  const panelAbove = isMobile ? pos.y > 300 : true;
+  const panelStyle: React.CSSProperties = isMobile && initialized
+    ? {
+        position: 'fixed',
+        left: Math.min(pos.x - 146, window.innerWidth - 350),
+        top: panelAbove ? pos.y - 340 : pos.y + 56,
+        zIndex: 9998,
+      }
+    : { position: 'fixed', bottom: 84, right: 24, zIndex: 9998 };
+
   return (
     <>
-      {/* Floating button */}
+      {/* Floating button — draggable on mobile */}
       <button
-        onClick={() => setOpen(!open)}
+        ref={btnRef}
+        onClick={() => { if (!dragging.current) setOpen(!open); }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
         style={{
-          position: 'fixed', bottom: 24, right: 24, zIndex: 9999,
+          ...btnStyle,
           width: 48, height: 48, borderRadius: '50%',
           background: '#3b82f6', color: '#fff', border: 'none',
           cursor: 'pointer', fontSize: 20, display: 'flex',
           alignItems: 'center', justifyContent: 'center',
           boxShadow: '0 4px 12px rgba(59,130,246,0.4)',
-          transition: 'transform 0.2s',
+          transition: dragging.current ? 'none' : 'transform 0.2s',
           transform: open ? 'rotate(45deg)' : 'none',
         }}
         title="Send Feedback"
       >
-        {open ? '+' : '💬'}
+        {open ? '+' : '\u{1F4AC}'}
       </button>
 
       {/* Feedback panel */}
       {open && (
         <div style={{
-          position: 'fixed', bottom: 84, right: 24, zIndex: 9998,
-          width: 340, background: '#0f172a', borderRadius: 14,
+          ...panelStyle,
+          width: 320, background: '#0f172a', borderRadius: 14,
           border: '1px solid #1e293b', boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
           overflow: 'hidden',
         }}>

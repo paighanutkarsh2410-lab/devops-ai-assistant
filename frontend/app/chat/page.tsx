@@ -3,18 +3,20 @@
 import { useRouter } from 'next/navigation';
 import DashboardShell from '@/components/DashboardShell';
 import { colors, btn } from '@/lib/theme';
+import { useBreakpoint } from '@/lib/useMediaQuery';
 import ChatInterface from '../../components/ChatInterface';
 
 export default function ChatPage() {
   const router = useRouter();
+  const { isMobile } = useBreakpoint();
 
   return (
     <DashboardShell>
-      <div style={{ padding: 32, maxWidth: 900, margin: '0 auto', height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ padding: isMobile ? '16px 14px' : 32, maxWidth: 900, margin: '0 auto', height: '100%', display: 'flex', flexDirection: 'column' }}>
         {/* Header */}
         <div className="slide-up" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <h1 style={{ fontSize: 26, fontWeight: 800, margin: 0, background: 'linear-gradient(135deg, #f0f0f0, #06b6d4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            <h1 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 800, margin: 0, background: 'linear-gradient(135deg, #f0f0f0, #06b6d4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               DevOps AI Chat
             </h1>
             <span style={{

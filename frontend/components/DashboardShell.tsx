@@ -3,6 +3,7 @@
 import { ReactNode, useState, useEffect, useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { colors } from '@/lib/theme';
+import { useBreakpoint } from '@/lib/useMediaQuery';
 
 interface NavItem { icon: string; label: string; path: string; }
 interface NavGroup { title: string; items: NavItem[]; }
@@ -134,6 +135,7 @@ export default function DashboardShell({ children }: { children: ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const { isMobile } = useBreakpoint();
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -203,14 +205,15 @@ export default function DashboardShell({ children }: { children: ReactNode }) {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#04040c' }}>
-      {/* ═══ SIDEBAR ═══ */}
+      {/* ═══ SIDEBAR (hidden on mobile — MobileNav handles navigation) ═══ */}
       <aside style={{
         width: sidebarWidth,
         minHeight: '100vh',
         background: 'rgba(6,6,15,0.95)',
         backdropFilter: 'blur(20px)',
+        display: isMobile ? 'none' : 'flex',
         borderRight: '1px solid rgba(255,255,255,0.04)',
-        display: 'flex', flexDirection: 'column',
+        flexDirection: 'column',
         transition: 'width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
         position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 40,
         overflowY: 'auto', overflowX: 'hidden',
@@ -331,7 +334,7 @@ export default function DashboardShell({ children }: { children: ReactNode }) {
 
       {/* ═══ MAIN CONTENT ═══ */}
       <main style={{
-        flex: 1, marginLeft: sidebarWidth,
+        flex: 1, marginLeft: isMobile ? 0 : sidebarWidth,
         transition: 'margin-left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
         minHeight: '100vh', background: '#04040c',
         position: 'relative', overflow: 'hidden',

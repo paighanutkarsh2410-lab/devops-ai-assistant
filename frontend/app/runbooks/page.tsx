@@ -6,6 +6,7 @@ import { api } from '@/lib/api';
 import RunbookExecutionComp from '@/components/RunbookExecution';
 import DashboardShell from '@/components/DashboardShell';
 import { colors } from '@/lib/theme';
+import { useBreakpoint } from '@/lib/useMediaQuery';
 
 interface RunbookType {
   id: string;
@@ -29,6 +30,7 @@ interface Execution {
 
 export default function RunbooksPage() {
   const router = useRouter();
+  const { isMobile } = useBreakpoint();
   const [runbooks, setRunbooks] = useState<RunbookType[]>([]);
   const [library, setLibrary] = useState<Record<string, unknown>[]>([]);
   const [execResult, setExecResult] = useState<Execution | null>(null);
@@ -76,10 +78,10 @@ export default function RunbooksPage() {
 
   return (
     <DashboardShell>
-      <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
-        <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
+      <div style={{ padding: isMobile ? '16px 14px' : 32, maxWidth: 1200, margin: '0 auto' }}>
+        <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 12 : 0, marginBottom: 28 }}>
           <div>
-            <h1 style={{ fontSize: 26, fontWeight: 800, margin: 0, background: 'linear-gradient(135deg, #f0f0f0, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Runbooks</h1>
+            <h1 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 800, margin: 0, background: 'linear-gradient(135deg, #f0f0f0, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Runbooks</h1>
             <p style={{ color: colors.textMuted, fontSize: 13, marginTop: 6 }}>Standard operating procedures for incident response</p>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
@@ -99,7 +101,7 @@ export default function RunbooksPage() {
 
         {/* Analytics */}
         {analytics && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
             <div style={cardStyle}>
               <div style={{ fontSize: 11, color: colors.textMuted }}>Total Executions</div>
               <div style={{ fontSize: 24, fontWeight: 700, color: colors.text }}>{(analytics.total_executions as number) || 0}</div>
@@ -121,7 +123,7 @@ export default function RunbooksPage() {
 
         {/* Library */}
         <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, color: colors.text }}>Runbook Library</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 32 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: 12, marginBottom: 32 }}>
           {library.map((tpl, i) => (
             <div key={i} style={cardStyle}>
               <h3 style={{ fontWeight: 600, fontSize: 14, marginBottom: 4, color: colors.text }}>{tpl.name as string}</h3>

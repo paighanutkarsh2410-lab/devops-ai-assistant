@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import DashboardShell from '@/components/DashboardShell';
 import { colors, btn, btnPrimary, card as cardStyle, input as inputStyle } from '@/lib/theme';
+import { useBreakpoint } from '@/lib/useMediaQuery';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -27,6 +28,7 @@ const knownServices = ['api-server', 'web-server', 'worker-service', 'database',
 
 export default function NotificationSettingsPage() {
   const router = useRouter();
+  const { isMobile } = useBreakpoint();
   const [prefs, setPrefs] = useState<NotificationPref[]>(defaultPrefs);
   const [saving, setSaving] = useState(false);
   const [testSent, setTestSent] = useState(false);
@@ -109,10 +111,10 @@ export default function NotificationSettingsPage() {
 
   return (
     <DashboardShell>
-      <div style={{ padding: 32, maxWidth: 800, margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px 14px' : 32, maxWidth: 800, margin: '0 auto' }}>
         <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
           <div>
-            <h1 style={{ fontSize: 26, fontWeight: 800, margin: 0, background: 'linear-gradient(135deg, #f0f0f0, #06b6d4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Notification Settings</h1>
+            <h1 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 800, margin: 0, background: 'linear-gradient(135deg, #f0f0f0, #06b6d4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Notification Settings</h1>
             <p style={{ fontSize: 13, color: colors.textMuted, margin: '4px 0 0' }}>Configure how and when you receive alerts</p>
           </div>
           <button
@@ -148,7 +150,7 @@ export default function NotificationSettingsPage() {
               </label>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 16 }}>
               <div>
                 <label style={{ fontSize: 12, color: colors.textMuted, display: 'block', marginBottom: 6 }}>
                   Severity Threshold

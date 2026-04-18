@@ -8,6 +8,7 @@ import { colors, card as cardStyle, btn, btnActive } from '@/lib/theme';
 import ForecastChart from '@/components/ForecastChart';
 import CapacityWidget from '@/components/CapacityWidget';
 import PredictiveAlerts from '@/components/PredictiveAlerts';
+import { useBreakpoint } from '@/lib/useMediaQuery';
 
 interface AlertStats {
   total: number;
@@ -18,6 +19,7 @@ interface AlertStats {
 
 export default function PredictionsPage() {
   const router = useRouter();
+  const { isMobile } = useBreakpoint();
   const [activeTab, setActiveTab] = useState<'alerts' | 'forecasts' | 'capacity'>('alerts');
   const [alerts, setAlerts] = useState([]);
   const [alertStats, setAlertStats] = useState<AlertStats | null>(null);
@@ -111,11 +113,11 @@ export default function PredictionsPage() {
 
   return (
     <DashboardShell>
-      <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px 14px' : 32, maxWidth: 1200, margin: '0 auto' }}>
         {/* Header */}
-        <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
+        <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 12 : 0, marginBottom: 28 }}>
           <div>
-            <h1 style={{ fontSize: 26, fontWeight: 800, background: 'linear-gradient(135deg, #f0f0f0, #ec4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Predictions</h1>
+            <h1 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 800, background: 'linear-gradient(135deg, #f0f0f0, #ec4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Predictions</h1>
             <p style={{ fontSize: 13, color: colors.textMuted }}>Proactive issue prevention and capacity planning</p>
           </div>
           <button onClick={() => router.push('/dashboard')} style={btn}>
@@ -125,7 +127,7 @@ export default function PredictionsPage() {
 
         {/* Stats */}
         {alertStats && (
-          <div className="slide-up-d1" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 28 }}>
+          <div className="slide-up-d1" style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: 12, marginBottom: 28 }}>
             {statItems.map((s, i) => (
               <div key={i} style={{...cardStyle, position: 'relative', overflow: 'hidden', borderTop: `2px solid ${s.color}`, transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)'}}>
                 <div style={{ position: 'absolute', top: -20, left: '50%', transform: 'translateX(-50%)', width: 80, height: 40, background: `radial-gradient(circle, ${s.color}18, transparent)`, filter: 'blur(12px)', animation: 'breathe 4s ease-in-out infinite', animationDelay: `${i * 0.5}s` }} />
@@ -165,7 +167,7 @@ export default function PredictionsPage() {
         )}
 
         {activeTab === 'forecasts' && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 12 }}>
             {forecasts.length === 0 ? (
               <div style={{
                 gridColumn: '1 / -1',

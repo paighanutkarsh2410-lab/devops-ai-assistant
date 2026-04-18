@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import DashboardShell from '@/components/DashboardShell';
 import { colors } from '@/lib/theme';
+// PDF export removed
+import { useBreakpoint } from '@/lib/useMediaQuery';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -31,6 +33,7 @@ export default function AgentStatusPage() {
   const [data, setData] = useState<any>(null);
   const [logs, setLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const { isMobile } = useBreakpoint();
 
   useEffect(() => {
     Promise.all([
@@ -52,10 +55,12 @@ export default function AgentStatusPage() {
 
   return (
     <DashboardShell>
-      <div style={{ padding: 32, maxWidth: 1400, margin: '0 auto' }}>
-        <div className="slide-up" style={{ marginBottom: 28 }}>
-          <h1 style={{ fontSize: 26, fontWeight: 800, margin: '0 0 6px', background: 'linear-gradient(135deg, #f0f0f0, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Agent Status Dashboard</h1>
-          <p style={{ color: colors.textMuted, fontSize: 13, marginBottom: 0 }}>Real-time health, performance, and SLA compliance</p>
+      <div id="agent-status-content" style={{ padding: isMobile ? '16px 14px' : 32, maxWidth: 1400, margin: '0 auto' }}>
+        <div className="slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 12 : 0, marginBottom: 28 }}>
+          <div>
+            <h1 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 800, margin: '0 0 6px', background: 'linear-gradient(135deg, #f0f0f0, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Agent Status Dashboard</h1>
+            <p style={{ color: colors.textMuted, fontSize: 13, marginBottom: 0 }}>Real-time health, performance, and SLA compliance</p>
+          </div>
         </div>
 
         {/* Agent Grid */}
@@ -92,7 +97,7 @@ export default function AgentStatusPage() {
         </div>
 
         {/* Alerts + SLA */}
-        <div className="slide-up-d2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <div className="slide-up-d2" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 16 }}>
           <Card title={`Active Alerts (${alerts.length})`}>
             {alerts.length === 0 ? (
               <div style={{ fontSize: 12, color: colors.textDim, textAlign: 'center', padding: 16 }}>No active alerts</div>

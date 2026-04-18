@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import DashboardShell from '@/components/DashboardShell';
 import { colors } from '@/lib/theme';
+import { useBreakpoint } from '@/lib/useMediaQuery';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -92,6 +93,7 @@ function Input({ label, value, onChange, placeholder, type = 'text' }: any) {
 /* -- Page ------------------------------------------------------------- */
 
 export default function AgentBuilderPage() {
+  const { isMobile } = useBreakpoint();
   const [draft, setDraft] = useState<AgentDraft>(EMPTY_DRAFT);
   const [templates, setTemplates] = useState<any[]>([]);
   const [actionLib, setActionLib] = useState<any[]>([]);
@@ -157,9 +159,9 @@ export default function AgentBuilderPage() {
 
   return (
     <DashboardShell>
-      <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px 14px' : 32, maxWidth: 1200, margin: '0 auto' }}>
         <div className="slide-up" style={{ marginBottom: 28 }}>
-          <h1 style={{ fontSize: 26, fontWeight: 800, margin: 0, background: 'linear-gradient(135deg, #f0f0f0, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Custom Agent Builder</h1>
+          <h1 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 800, margin: 0, background: 'linear-gradient(135deg, #f0f0f0, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Custom Agent Builder</h1>
           <p style={{ color: colors.textMuted, fontSize: 13, marginTop: 6 }}>
             Create AI agents without code — define triggers, data sources, analysis prompts, and actions
           </p>

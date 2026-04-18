@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import DashboardShell from '@/components/DashboardShell';
 import { colors } from '@/lib/theme';
+import { useBreakpoint } from '@/lib/useMediaQuery';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -47,6 +48,7 @@ function Card({ title, children, style }: { title: string; children: React.React
 /* -- Main Page -------------------------------------------------------- */
 
 export default function AgentIntelligencePage() {
+  const { isMobile } = useBreakpoint();
   const [orchStatus, setOrchStatus] = useState<any>(null);
   const [specialists, setSpecialists] = useState<any>(null);
   const [learning, setLearning] = useState<any>(null);
@@ -92,10 +94,10 @@ export default function AgentIntelligencePage() {
 
   return (
     <DashboardShell>
-      <div style={{ padding: 32, maxWidth: 1400, margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px 14px' : 32, maxWidth: 1400, margin: '0 auto' }}>
         {/* Header */}
         <div className="slide-up" style={{ marginBottom: 28 }}>
-          <h1 style={{ fontSize: 26, fontWeight: 800, margin: 0, background: 'linear-gradient(135deg, #f0f0f0, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          <h1 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 800, margin: 0, background: 'linear-gradient(135deg, #f0f0f0, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             Agent Intelligence
           </h1>
           <p style={{ color: colors.textMuted, fontSize: 13, marginTop: 6 }}>

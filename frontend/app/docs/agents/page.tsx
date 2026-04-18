@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import DashboardShell from '@/components/DashboardShell';
 import { colors, input as inputStyle } from '@/lib/theme';
+import { useBreakpoint } from '@/lib/useMediaQuery';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -34,6 +35,7 @@ function Card({ title, children, style }: { title: string; children: React.React
 }
 
 export default function AgentDocsPage() {
+  const { isMobile } = useBreakpoint();
   const [docs, setDocs] = useState<any>(null);
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
   const [search, setSearch] = useState('');
@@ -63,9 +65,9 @@ export default function AgentDocsPage() {
 
   return (
     <DashboardShell>
-      <div style={{ padding: 32, maxWidth: 1400, margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px 14px' : 32, maxWidth: 1400, margin: '0 auto' }}>
         <div className="slide-up" style={{ marginBottom: 28 }}>
-          <h1 style={{ fontSize: 26, fontWeight: 800, margin: '0 0 6px', background: 'linear-gradient(135deg, #f0f0f0, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Agent Documentation</h1>
+          <h1 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 800, margin: '0 0 6px', background: 'linear-gradient(135deg, #f0f0f0, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Agent Documentation</h1>
           <p style={{ color: colors.textMuted, fontSize: 13, marginBottom: 0 }}>Interactive reference for all AI agents</p>
         </div>
 

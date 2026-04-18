@@ -5,6 +5,7 @@ import { apiCache } from '@/lib/cache';
 import { useState, useEffect } from 'react';
 import DashboardShell from '@/components/DashboardShell';
 import { colors, btn } from '@/lib/theme';
+import { useBreakpoint } from '@/lib/useMediaQuery';
 
 function MetricBox({ label, value, unit, good, warn }: {
   label: string;
@@ -58,6 +59,7 @@ function MetricBox({ label, value, unit, good, warn }: {
 }
 
 export default function PerfMonitorPage() {
+  const { isMobile } = useBreakpoint();
   const metrics = usePerformance();
   const [cacheSize, setCacheSize] = useState(0);
   const [memoryInfo, setMemoryInfo] = useState<{ usedJSHeapSize: number; jsHeapSizeLimit: number } | null>(null);
@@ -84,9 +86,9 @@ export default function PerfMonitorPage() {
 
   return (
     <DashboardShell>
-      <div style={{ padding: 32, maxWidth: 1000, margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px 14px' : 32, maxWidth: 1000, margin: '0 auto' }}>
         <div className="slide-up" style={{ marginBottom: 28 }}>
-          <h1 style={{ fontSize: 26, fontWeight: 800, margin: 0, background: 'linear-gradient(135deg, #f0f0f0, #f59e0b)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          <h1 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 800, margin: 0, background: 'linear-gradient(135deg, #f0f0f0, #f59e0b)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             Frontend Performance
           </h1>
           <p style={{ color: colors.textMuted, fontSize: 13, margin: '4px 0 0' }}>
@@ -132,7 +134,7 @@ export default function PerfMonitorPage() {
         </div>
 
         {/* Runtime */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 16, marginBottom: 20 }}>
           <div style={{
             background: colors.bgCard,
             borderRadius: 14,
