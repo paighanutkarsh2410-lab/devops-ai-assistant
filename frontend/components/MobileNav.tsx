@@ -79,14 +79,6 @@ const NAV_SECTIONS: { title: string; items: NavItem[] }[] = [
   },
 ];
 
-// Bottom bar items for quick access
-const BOTTOM_BAR: NavItem[] = [
-  { label: 'Home', path: '/dashboard', icon: '\u{1F3E0}' },
-  { label: 'Monitor', path: '/live', icon: '\u{1F4E1}' },
-  { label: 'Analytics', path: '/analytics', icon: '\u{1F4C8}' },
-  { label: 'Alerts', path: '/predictions', icon: '\u{1F514}' },
-];
-
 export default function MobileNav() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const router = useRouter();
@@ -222,72 +214,6 @@ export default function MobileNav() {
           </div>
         </div>
       )}
-
-      {/* Bottom tab bar */}
-      <div
-        style={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: 56,
-          background: 'rgba(6,6,15,0.95)',
-          backdropFilter: 'blur(20px)',
-          borderTop: `1px solid ${colors.border}`,
-          display: 'flex',
-          justifyContent: 'space-around',
-          alignItems: 'center',
-          zIndex: 1000,
-          paddingBottom: 'env(safe-area-inset-bottom, 0)',
-        }}
-      >
-        {BOTTOM_BAR.map((item) => {
-          const active = pathname === item.path;
-          return (
-            <button
-              key={item.path}
-              onClick={() => navigate(item.path)}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 2,
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: active ? '#60a5fa' : colors.textDim,
-                fontSize: 10,
-                fontWeight: active ? 600 : 400,
-                padding: '4px 12px',
-                minWidth: 60,
-                transition: 'color 0.15s ease',
-              }}
-            >
-              <span style={{ fontSize: 20, filter: active ? 'drop-shadow(0 0 4px rgba(59,130,246,0.5))' : 'none' }}>{item.icon}</span>
-              {item.label}
-            </button>
-          );
-        })}
-        <button
-          onClick={() => setDrawerOpen(true)}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 2,
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            color: colors.textDim,
-            fontSize: 10,
-            padding: '4px 12px',
-            minWidth: 60,
-          }}
-        >
-          <span style={{ fontSize: 20 }}>⋯</span>
-          More
-        </button>
-      </div>
 
       <style>{`
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }

@@ -25,7 +25,7 @@ export default function ResponsiveLayout({ children }: ResponsiveLayoutProps) {
         role="main"
         style={{
           paddingTop: isMobile ? 52 : 0,
-          paddingBottom: isMobile ? 64 : 0,
+          paddingBottom: 0,
           minHeight: '100vh',
         }}
       >
