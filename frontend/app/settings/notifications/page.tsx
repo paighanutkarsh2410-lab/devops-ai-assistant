@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import DashboardShell from '@/components/DashboardShell';
 import { colors, btn, btnPrimary, card as cardStyle, input as inputStyle } from '@/lib/theme';
 import { useBreakpoint } from '@/lib/useMediaQuery';
+import { playCriticalAlarm, playHighAlert, playMediumAlert } from '@/lib/alertSound';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -239,6 +240,40 @@ export default function NotificationSettingsPage() {
             </div>
           </div>
         ))}
+
+        {/* Audio Alert Test */}
+        <div style={{
+          background: colors.bgCard, backdropFilter: 'blur(12px)', borderRadius: 14,
+          padding: 24, marginBottom: 16, border: `1px solid ${colors.border}`,
+        }}>
+          <h2 style={{ fontSize: 18, fontWeight: 600, color: colors.text, margin: '0 0 8px' }}>Audio Alerts</h2>
+          <p style={{ fontSize: 12, color: colors.textMuted, margin: '0 0 14px' }}>
+            Browser alarm sounds play automatically when critical or high severity incidents are detected via WebSocket.
+          </p>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <button onClick={playCriticalAlarm} style={{
+              padding: '6px 14px', borderRadius: 8, border: `1px solid #ef4444`,
+              background: 'rgba(239,68,68,0.1)', color: '#ef4444', cursor: 'pointer',
+              fontSize: 12, fontWeight: 600,
+            }}>
+              Test Critical Alarm
+            </button>
+            <button onClick={playHighAlert} style={{
+              padding: '6px 14px', borderRadius: 8, border: `1px solid #f97316`,
+              background: 'rgba(249,115,22,0.1)', color: '#f97316', cursor: 'pointer',
+              fontSize: 12, fontWeight: 600,
+            }}>
+              Test High Alert
+            </button>
+            <button onClick={playMediumAlert} style={{
+              padding: '6px 14px', borderRadius: 8, border: `1px solid #f59e0b`,
+              background: 'rgba(245,158,11,0.1)', color: '#f59e0b', cursor: 'pointer',
+              fontSize: 12, fontWeight: 600,
+            }}>
+              Test Medium Alert
+            </button>
+          </div>
+        </div>
 
         <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
           <button

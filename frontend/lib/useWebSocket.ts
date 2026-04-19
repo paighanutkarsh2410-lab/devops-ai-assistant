@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { playAlertForSeverity } from './alertSound';
 
 const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000';
 
@@ -61,12 +62,20 @@ export function useWebSocket(userId?: string): UseWebSocketReturn {
         setLastMessage(msg);
         setMessages(prev => [...prev.slice(-99), msg]);
 
-        // Browser notification for critical incidents
-        if (msg.type === 'new_incident' && msg.data?.severity === 'critical') {
-          showBrowserNotification(
-            'Critical Incident',
-            `${msg.data?.title || 'New incident detected'}`,
-          );
+        // Browser notification + audio alert for incidents
+        if (msg.type === 'new_incident' || msg.type === 'new_alert') {
+          const severity = (msg.data?.severity as string) || 'low';
+
+          // Audio alarm for critical/high
+          playAlertForSeverity(severity);
+
+          // Browser notification for critical/high
+          if (severity === 'critical' || severity === 'high') {
+            showBrowserNotification(
+              `${severity.toUpperCase()} Incident`,
+              `${msg.data?.title || 'New incident detected'}`,
+            );
+          }
         }
       } catch {
         // ignore parse errors
