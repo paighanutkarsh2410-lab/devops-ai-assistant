@@ -84,7 +84,50 @@ export default function IntegrationsPage() {
     try { await api.post(`/integrations/${id}/toggle`); loadData(); } catch { /* empty */ }
   };
 
+  // GitHub live data
+  const [githubData, setGithubData] = useState<{ commits: any[]; deployments: any[]; repo: any } | null>(null);
+  const [loadingGithub, setLoadingGithub] = useState(false);
+  const [slackTestMsg, setSlackTestMsg] = useState('');
+  const [slackSending, setSlackSending] = useState(false);
+  const [slackResult, setSlackResult] = useState<string | null>(null);
+
   const connectedNames = new Set(connected.map(c => c.name));
+
+  const loadGithubData = async () => {
+    if (!connectedNames.has('github')) return;
+    setLoadingGithub(true);
+    try {
+      const [commitsRes, deploymentsRes, repoRes] = await Promise.allSettled([
+        api.get('/integrations/github/commits?limit=8'),
+        api.get('/integrations/github/deployments?limit=5'),
+        api.get('/integrations/github/repo'),
+      ]);
+      setGithubData({
+        commits: commitsRes.status === 'fulfilled' ? commitsRes.value.data.commits || [] : [],
+        deployments: deploymentsRes.status === 'fulfilled' ? deploymentsRes.value.data.deployments || [] : [],
+        repo: repoRes.status === 'fulfilled' ? repoRes.value.data : null,
+      });
+    } catch { /* empty */ }
+    setLoadingGithub(false);
+  };
+
+  const sendSlackTest = async () => {
+    setSlackSending(true);
+    setSlackResult(null);
+    try {
+      const res = await api.post('/integrations/slack/test-send', { message: slackTestMsg || 'Test notification from DevOps AI Assistant' });
+      setSlackResult(res.data.success ? 'Sent successfully!' : `Failed: ${res.data.error}`);
+    } catch {
+      setSlackResult('Failed to send');
+    }
+    setSlackSending(false);
+  };
+
+  useEffect(() => {
+    if (connectedNames.has('github') && !githubData && !loadingGithub) {
+      loadGithubData();
+    }
+  }, [connected]);
 
   const glassCard: React.CSSProperties = {
     background: colors.bgCard,
@@ -166,6 +209,144 @@ export default function IntegrationsPage() {
               })}
             </div>
           </>
+        )}
+
+        {/* GitHub Live Data */}
+        {connectedNames.has('github') && (
+          <div className="slide-up-d2" style={{ marginBottom: 24 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+              <h2 style={{ fontSize: 16, fontWeight: 600, color: colors.text, margin: 0 }}>
+                <span style={{ marginRight: 8 }}>🐙</span>GitHub Live Data
+              </h2>
+              <button onClick={loadGithubData} disabled={loadingGithub} style={{
+                padding: '4px 12px', borderRadius: 6, border: `1px solid ${colors.border}`,
+                background: colors.bgElevated, color: colors.textSecondary, cursor: 'pointer', fontSize: 11,
+              }}>
+                {loadingGithub ? 'Loading...' : 'Refresh'}
+              </button>
+            </div>
+
+            {githubData && (
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 12 }}>
+                {/* Repo Info */}
+                {githubData.repo && (
+                  <div style={{ ...glassCard, gridColumn: isMobile ? '1' : '1 / -1', borderTop: `3px solid #f59e0b` }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span style={{ fontSize: 11, color: colors.textDim }}>Repository:</span>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: colors.text }}>{githubData.repo.name}</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span style={{ fontSize: 11, color: colors.textDim }}>Branch:</span>
+                        <span style={{ padding: '2px 8px', borderRadius: 5, fontSize: 11, fontWeight: 600, background: 'rgba(59,130,246,0.1)', color: colors.accent }}>{githubData.repo.default_branch}</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span style={{ fontSize: 11, color: colors.textDim }}>Language:</span>
+                        <span style={{ fontSize: 12, color: colors.textSecondary }}>{githubData.repo.language}</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span style={{ fontSize: 11, color: colors.textDim }}>Open Issues:</span>
+                        <span style={{ fontSize: 12, fontWeight: 600, color: githubData.repo.open_issues > 0 ? colors.warning : colors.success }}>{githubData.repo.open_issues}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Recent Commits */}
+                <div style={{ ...glassCard, borderTop: '3px solid #8b5cf6' }}>
+                  <h3 style={{ fontSize: 13, fontWeight: 600, color: colors.text, margin: '0 0 10px' }}>Recent Commits</h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 300, overflowY: 'auto' }}>
+                    {githubData.commits.length === 0 && <span style={{ fontSize: 12, color: colors.textDim }}>No commits found</span>}
+                    {githubData.commits.map((c: any, i: number) => (
+                      <div key={i} style={{
+                        padding: '8px 10px', borderRadius: 8, background: colors.bgElevated,
+                        border: `1px solid ${colors.borderLight}`,
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+                          <span style={{ fontSize: 12, color: colors.textSecondary, lineHeight: 1.4, flex: 1 }}>{c.message}</span>
+                          <span style={{ fontSize: 10, fontFamily: 'monospace', color: '#8b5cf6', flexShrink: 0, padding: '2px 6px', borderRadius: 4, background: 'rgba(139,92,246,0.1)' }}>{c.sha}</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
+                          <span style={{ fontSize: 10, color: colors.textDim }}>{c.author}</span>
+                          <span style={{ fontSize: 10, color: colors.textDim }}>{new Date(c.date).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Deployments / Workflow Runs */}
+                <div style={{ ...glassCard, borderTop: '3px solid #10b981' }}>
+                  <h3 style={{ fontSize: 13, fontWeight: 600, color: colors.text, margin: '0 0 10px' }}>Deployments / CI Runs</h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 300, overflowY: 'auto' }}>
+                    {githubData.deployments.length === 0 && <span style={{ fontSize: 12, color: colors.textDim }}>No deployments found</span>}
+                    {githubData.deployments.map((d: any, i: number) => {
+                      const statusColor = d.status === 'success' ? colors.success : d.status === 'failure' ? colors.danger : colors.warning;
+                      return (
+                        <div key={i} style={{
+                          padding: '8px 10px', borderRadius: 8, background: colors.bgElevated,
+                          border: `1px solid ${colors.borderLight}`,
+                        }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ fontSize: 12, color: colors.textSecondary, fontWeight: 500 }}>{d.name || d.environment}</span>
+                            <span style={{
+                              fontSize: 10, padding: '2px 8px', borderRadius: 5, fontWeight: 600,
+                              background: `${statusColor}15`, color: statusColor,
+                            }}>{d.status}</span>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
+                            <span style={{ fontSize: 10, color: colors.textDim }}>{d.branch || ''} • {d.commit_sha}</span>
+                            <span style={{ fontSize: 10, color: colors.textDim }}>{new Date(d.created_at).toLocaleDateString()}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {loadingGithub && !githubData && (
+              <div style={{ ...glassCard, textAlign: 'center', padding: 24 }}>
+                <span style={{ fontSize: 13, color: colors.textMuted }}>Loading GitHub data...</span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Slack Test Panel */}
+        {connectedNames.has('slack') && (
+          <div className="slide-up-d2" style={{ marginBottom: 24 }}>
+            <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, color: colors.text }}>
+              <span style={{ marginRight: 8 }}>💬</span>Slack Test
+            </h2>
+            <div style={{ ...glassCard, borderTop: '3px solid #3b82f6' }}>
+              <div style={{ display: 'flex', gap: 8, alignItems: isMobile ? 'stretch' : 'flex-end', flexDirection: isMobile ? 'column' : 'row' }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ fontSize: 11, color: colors.textMuted, display: 'block', marginBottom: 4 }}>Test Message</label>
+                  <input
+                    value={slackTestMsg}
+                    onChange={e => setSlackTestMsg(e.target.value)}
+                    placeholder="Test notification from DevOps AI Assistant"
+                    style={{ ...inputStyle, fontSize: 13, padding: '8px 12px', width: '100%' }}
+                  />
+                </div>
+                <button onClick={sendSlackTest} disabled={slackSending} style={{
+                  ...btnPrimary, padding: '8px 20px', fontSize: 12, whiteSpace: 'nowrap',
+                  opacity: slackSending ? 0.6 : 1,
+                }}>
+                  {slackSending ? 'Sending...' : 'Send Test'}
+                </button>
+              </div>
+              {slackResult && (
+                <div style={{
+                  marginTop: 10, padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 500,
+                  background: slackResult.includes('success') ? colors.successBg : colors.dangerBg,
+                  color: slackResult.includes('success') ? colors.success : colors.danger,
+                }}>{slackResult}</div>
+              )}
+            </div>
+          </div>
         )}
 
         {/* Test result */}
