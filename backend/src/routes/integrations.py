@@ -213,6 +213,143 @@ def toggle_integration(
     return _serialize(integration)
 
 
+@router.get("/github/commits")
+def github_commits(
+    limit: int = 10,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    """Get recent commits from connected GitHub repo."""
+    integration = db.query(Integration).filter(
+        Integration.user_id == user.id, Integration.name == "github", Integration.enabled == True
+    ).first()
+    if not integration:
+        raise HTTPException(404, "GitHub not connected")
+    client = GitHubIntegration(integration.config)
+    return client.get_recent_commits(limit=limit)
+
+
+@router.get("/github/deployments")
+def github_deployments(
+    limit: int = 10,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    """Get recent deployments/workflow runs from connected GitHub repo."""
+    integration = db.query(Integration).filter(
+        Integration.user_id == user.id, Integration.name == "github", Integration.enabled == True
+    ).first()
+    if not integration:
+        raise HTTPException(404, "GitHub not connected")
+    client = GitHubIntegration(integration.config)
+    return client.get_recent_deployments(limit=limit)
+
+
+@router.get("/github/repo")
+def github_repo_info(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    """Get connected GitHub repo info."""
+    integration = db.query(Integration).filter(
+        Integration.user_id == user.id, Integration.name == "github", Integration.enabled == True
+    ).first()
+    if not integration:
+        raise HTTPException(404, "GitHub not connected")
+    client = GitHubIntegration(integration.config)
+    return client.get_repo_info()
+
+
+@router.post("/github/correlate")
+def github_correlate(
+    since: str,
+    service_name: Optional[str] = None,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    """Find commits/deployments that correlate with an incident timeframe."""
+    integration = db.query(Integration).filter(
+        Integration.user_id == user.id, Integration.name == "github", Integration.enabled == True
+    ).first()
+    if not integration:
+        raise HTTPException(404, "GitHub not connected")
+    client = GitHubIntegration(integration.config)
+    return client.correlate_deployments(since=since, service_name=service_name)
+
+
+@router.post("/github/issue")
+def github_create_issue(
+    title: str,
+    body: str,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    """Create a GitHub issue from an incident."""
+    integration = db.query(Integration).filter(
+        Integration.user_id == user.id, Integration.name == "github", Integration.enabled == True
+    ).first()
+    if not integration:
+        raise HTTPException(404, "GitHub not connected")
+    client = GitHubIntegration(integration.config)
+    return client.create_issue(title=title, body=body)
+
+
+class SlackTestMessage(BaseModel):
+    message: str = "Test notification from DevOps AI Assistant"
+    webhook_url: str = ""
+
+
+@router.post("/slack/test-send")
+def slack_test_send(
+    body: SlackTestMessage,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Send a test Slack notification. Uses connected config or provided webhook."""
+    import requests as req
+
+    webhook = body.webhook_url
+
+    # If no webhook provided, try connected integration
+    if not webhook:
+        integration = db.query(Integration).filter(
+            Integration.user_id == user.id, Integration.name == "slack", Integration.enabled == True
+        ).first()
+        if integration and integration.config:
+            webhook = integration.config.get("webhook_url", "")
+
+    if not webhook:
+        raise HTTPException(400, "No Slack webhook configured")
+
+    payload = {
+        "text": body.message,
+        "blocks": [
+            {
+                "type": "header",
+                "text": {"type": "plain_text", "text": "🧪 DevOps AI — Test Notification"},
+            },
+            {
+                "type": "section",
+                "text": {"type": "mrkdwn", "text": f"*Message:*\n{body.message}"},
+            },
+            {
+                "type": "context",
+                "elements": [
+                    {"type": "mrkdwn", "text": "✅ Slack integration is working correctly."},
+                ],
+            },
+        ],
+    }
+
+    try:
+        resp = req.post(webhook, json=payload, timeout=10)
+        if resp.status_code == 200:
+            return {"success": True, "message": "Test notification sent to Slack"}
+        return {"success": False, "error": f"Slack returned {resp.status_code}"}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
 def _get_client(integration: Integration):
     clients = {
         "jira": JiraIntegration,
