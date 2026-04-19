@@ -4,9 +4,11 @@ An autonomous infrastructure monitoring and management platform built with 6 AI 
 
 <div align="center">
 
-### Watch the Demo
+### Introducing DevOps AI Assistant
 
-[![DevOps AI Assistant — Demo Video](https://img.youtube.com/vi/pbmYtUhJ1SM/maxresdefault.jpg)](https://youtu.be/pbmYtUhJ1SM)
+[![DevOps AI Assistant — Promo Video](https://img.youtube.com/vi/pbmYtUhJ1SM/maxresdefault.jpg)](https://youtu.be/pbmYtUhJ1SM)
+
+*Click to watch the promotional video*
 
 **[Live App](https://devops-ai-assistant.vercel.app)** · **[API Docs](https://devops-ai-backend.onrender.com/docs)** · **[Architecture](#architecture)**
 
