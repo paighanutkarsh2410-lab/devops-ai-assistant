@@ -138,9 +138,27 @@ export default function DashboardShell({ children }: { children: ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
   const { isMobile } = useBreakpoint();
 
   useEffect(() => { setMounted(true); }, []);
+
+  // Restore sidebar scroll position across navigations
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+    const saved = sessionStorage.getItem('sidebar-scroll');
+    if (saved) nav.scrollTop = Number(saved);
+  }, []);
+
+  // Save scroll position on every scroll
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+    const handleScroll = () => sessionStorage.setItem('sidebar-scroll', String(nav.scrollTop));
+    nav.addEventListener('scroll', handleScroll, { passive: true });
+    return () => nav.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const isActive = (path: string) => pathname === path || pathname.startsWith(path + '/');
   const sidebarWidth = collapsed ? 68 : 248;
@@ -309,7 +327,7 @@ export default function DashboardShell({ children }: { children: ReactNode }) {
         </button>
 
         {/* Nav groups */}
-        <nav style={{ flex: 1, padding: '6px 8px', overflowY: 'auto' }}>
+        <nav ref={navRef} style={{ flex: 1, padding: '6px 8px', overflowY: 'auto' }}>
           {navGroups.map((group) => (
             <div key={group.title} style={{ marginBottom: 6 }}>
               {!collapsed && (
