@@ -2,6 +2,27 @@
 
 An autonomous infrastructure monitoring and management platform built with 6 AI agents that work together to detect, diagnose, and remediate production issues in real-time.
 
+<div align="center">
+
+### Watch the Demo
+
+[![DevOps AI Assistant — Promo Video](https://img.shields.io/badge/▶_Watch_Demo-Video-blue?style=for-the-badge&logo=youtube&logoColor=white)](YOUR_VIDEO_URL_HERE)
+
+<!-- 
+  HOW TO ADD YOUR VIDEO:
+  1. Upload DevOps_AI_Assistant_4K_Final.mp4 to YouTube (unlisted or public)
+  2. Copy the video URL (e.g. https://www.youtube.com/watch?v=abc123)
+  3. Replace YOUR_VIDEO_URL_HERE above with the YouTube URL
+  4. For a thumbnail preview, replace the badge line with:
+     [![Demo Video](https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)
+-->
+
+**[Live App](https://devops-ai-assistant.vercel.app)** · **[API Docs](https://devops-ai-backend.onrender.com/docs)** · **[Architecture](#architecture)**
+
+</div>
+
+---
+
 ## Overview
 
 This platform automates the entire incident lifecycle — from anomaly detection to root cause analysis to automated remediation. It learns from every incident to improve over time and can predict issues before they impact users.
@@ -9,19 +30,53 @@ This platform automates the entire incident lifecycle — from anomaly detection
 ### Key Features
 
 - **Real-time Monitoring** — Anomaly detection using z-score analysis, moving averages, and adaptive thresholds
-- **AI-Powered Diagnostics** — Automated root cause analysis with correlation engine and knowledge base
+- **AI-Powered Diagnostics** — Automated root cause analysis with Claude AI, confidence scoring, and evidence chains
 - **Auto-Remediation** — Safe execution framework with checkpoints, rollback capability, and approval workflows
 - **Predictive Analytics** — Time-series forecasting, capacity planning, and proactive alerting
-- **Learning System** — Vector-based pattern recognition that improves diagnosis accuracy over time
-- **Multi-Channel Notifications** — Intelligent alert routing with Slack, email, and in-app notifications
+- **Learning System** — Qdrant vector-based pattern recognition that improves diagnosis accuracy over time
+- **Multi-Channel Notifications** — Slack, email, and browser audio alerts with intelligent routing
 - **Natural Language Chat** — Ask questions about your infrastructure in plain English
+- **Real Integrations** — GitHub (commits, deployments, CI status), Slack (webhook notifications)
+- **What-If Simulator** — Test incident response scenarios before they happen
+- **Incident Flow Visualization** — Animated pipeline showing how 6 agents collaborate to resolve issues
+
+### Screenshots
+
+<details>
+<summary>📊 Dashboard & Monitoring</summary>
+
+| Dashboard | Live Metrics |
+|:---------:|:------------:|
+| Real-time overview with health scores, incident stats, and agent status | Live metric charts with anomaly detection overlays |
+
+</details>
+
+<details>
+<summary>🤖 AI Agents</summary>
+
+| Decision Graph | Incident Flow |
+|:--------------:|:-------------:|
+| Live visualization of agent communication and decision-making | Animated step-by-step pipeline showing agent collaboration |
+
+</details>
+
+<details>
+<summary>🔮 Scenarios & Predictions</summary>
+
+| What-If Simulator | Predictions |
+|:------------------:|:-----------:|
+| Simulate infrastructure incidents and see agent responses | Forecasted issues with prevention recommendations |
+
+</details>
+
+---
 
 ## Architecture
 
 ```
                     ┌─────────────────────────────┐
                     │       Next.js Frontend       │
-                    │    (Dashboard + Analytics)    │
+                    │   (28+ Dashboard Sections)   │
                     └──────────┬──────────────────┘
                                │
                     ┌──────────▼──────────────────┐
@@ -32,8 +87,8 @@ This platform automates the entire incident lifecycle — from anomaly detection
           ┌────────────────────┼────────────────────┐
           │                    │                     │
    ┌──────▼──────┐    ┌───────▼───────┐    ┌───────▼───────┐
-   │ PostgreSQL  │    │    Redis      │    │  Anthropic    │
-   │  Database   │    │    Cache      │    │     API       │
+   │ PostgreSQL  │    │    Redis      │    │  Claude AI    │
+   │  Database   │    │    Cache      │    │  (Anthropic)  │
    └─────────────┘    └───────────────┘    └───────────────┘
 ```
 
@@ -41,21 +96,26 @@ This platform automates the entire incident lifecycle — from anomaly detection
 
 ```
 Monitor → Diagnostic → Remediation → Learning → Prediction → Communication
+  30s        60s          90s          120s       hourly        5min
 ```
 
-Each agent operates autonomously and hands off context to the next stage. The pipeline processes incidents end-to-end without manual intervention.
+Each agent operates autonomously with its own tick interval and hands off context to the next stage. The pipeline processes incidents end-to-end without manual intervention.
 
 ## Tech Stack
 
 | Component | Technology |
 |-----------|------------|
-| Frontend | Next.js 16, React 19, TypeScript |
+| Frontend | Next.js 16, React 19, TypeScript, Canvas API |
 | Backend | FastAPI, Python 3.12, SQLAlchemy |
 | Database | PostgreSQL |
 | Cache | Redis |
-| AI/ML | Anthropic API, Sentence-Transformers |
+| AI/ML | Claude API (Anthropic), Sentence-Transformers |
+| Vector DB | Qdrant Cloud |
+| Integrations | GitHub API, Slack Webhooks, Resend Email |
 | Hosting | Vercel (frontend), Render (backend) |
+| CI/CD | GitHub Actions |
 | Auth | JWT with bcrypt |
+| PWA | Service Worker, Web Audio API |
 
 ## Live Demo
 
@@ -102,48 +162,54 @@ JWT_SECRET=your_secret_here
 
 ```
 devops-ai-assistant/
-├── frontend/          # Next.js dashboard (35+ pages)
+├── frontend/          # Next.js dashboard (28+ sections)
 ├── backend/           # FastAPI REST API
-├── agents/            # AI agent pipeline
+├── agents/            # AI agent pipeline (6 agents)
 ├── database/          # Schema and migrations
 ├── monitoring/        # Prometheus & Grafana configs
 ├── docs/              # Architecture and API documentation
-├── tests/             # Test suites
+├── .github/           # CI/CD workflows
 └── security/          # Security audit and compliance
 ```
 
 ## Agent System
 
 ### Monitor Agent
-Watches infrastructure metrics via Prometheus, detects anomalies using statistical analysis (z-score, moving averages), and triggers incidents when thresholds are breached.
+Watches infrastructure metrics via Prometheus, detects anomalies using statistical analysis (z-score, moving averages), and triggers incidents when thresholds are breached. Runs every **30 seconds**.
 
 ### Diagnostic Agent
-Investigates incidents by correlating metrics, deployments, and logs. Uses AI for root cause analysis with confidence scoring. Falls back to rule-based analysis when the API is unavailable.
+Investigates incidents by correlating metrics, deployments, and logs. Uses Claude AI for root cause analysis with confidence scoring and evidence chains. Falls back to rule-based analysis when the API is unavailable. Runs every **60 seconds**.
 
 ### Remediation Agent
-Executes safe automated fixes — service restarts, scaling, rollbacks, cache clearing. Every action has checkpoints and auto-rollback. High-risk actions require human approval.
+Executes safe automated fixes — service restarts, scaling, rollbacks, cache clearing. Every action has checkpoints and auto-rollback. High-risk actions require human approval. Runs every **90 seconds**.
 
 ### Learning Agent
-Stores incident patterns in a vector database for similarity search. Tracks which remediation actions worked and recommends proven fixes for recurring issues.
+Stores incident patterns in Qdrant vector database for similarity search using sentence-transformer embeddings. Tracks which remediation actions worked and recommends proven fixes for recurring issues. Runs every **2 minutes**.
 
 ### Prediction Agent
-Forecasts metric trends using time-series analysis. Identifies capacity breaches before they happen and generates proactive alerts with prevention recommendations.
+Forecasts metric trends using time-series analysis (Prophet/linear regression). Identifies capacity breaches before they happen and generates proactive alerts with prevention recommendations. Runs **hourly**.
 
 ### Communication Agent
-Routes notifications intelligently based on severity and user preferences. Supports Slack, email, and in-app channels with anti-spam protection.
+Routes notifications intelligently based on severity and user preferences. Supports Slack (rich messages, thread replies, interactive buttons), email, and browser audio alerts. Anti-spam with dedup, rate limiting, and quiet hours. Runs every **5 minutes**.
 
 ## Dashboard Features
 
-- Incident management with timeline and comments
-- Real-time metric charts and live monitoring
-- Predictive alerts with prevention tracking
-- Approval workflow for remediation actions
-- Audit log with full action history
-- Runbook library and workflow automation
-- Chaos engineering experiments
-- SLA tracking and cost analysis
-- Executive summary dashboards
-- Custom report builder
+| Category | Features |
+|----------|----------|
+| **Overview** | Dashboard, Live Metrics, AI Chat |
+| **Monitoring** | System Health, Analytics, Performance, Predictions |
+| **AI Agents** | Agent Status, Intelligence, Decision Graph, Incident Flow, Agent Builder, Marketplace, Learning |
+| **Operations** | Workflows, Runbooks, Maintenance, Chaos Testing, What-If Scenarios |
+| **Security** | Security Dashboard, Compliance, Audit Log, Disaster Recovery |
+| **Insights** | Reports, Cost Analysis, SLA Tracking, Executive View, Visualizations |
+| **Settings** | Notifications (with audio alert test), Integrations, Theme |
+
+## Key Integrations
+
+- **GitHub** — Real-time commits, deployments, CI status, deployment correlation with incidents
+- **Slack** — Rich incident notifications, remediation updates, approval requests, daily summaries
+- **Browser Alerts** — Web Audio API alarm sounds for critical/high severity incidents (no sound files needed)
+- **PWA** — Installable on mobile, network-first caching, auto-update on deploy
 
 ## Safety & Security
 
