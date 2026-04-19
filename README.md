@@ -6,16 +6,7 @@ An autonomous infrastructure monitoring and management platform built with 6 AI 
 
 ### Watch the Demo
 
-[![DevOps AI Assistant — Promo Video](https://img.shields.io/badge/▶_Watch_Demo-Video-blue?style=for-the-badge&logo=youtube&logoColor=white)](YOUR_VIDEO_URL_HERE)
-
-<!-- 
-  HOW TO ADD YOUR VIDEO:
-  1. Upload DevOps_AI_Assistant_4K_Final.mp4 to YouTube (unlisted or public)
-  2. Copy the video URL (e.g. https://www.youtube.com/watch?v=abc123)
-  3. Replace YOUR_VIDEO_URL_HERE above with the YouTube URL
-  4. For a thumbnail preview, replace the badge line with:
-     [![Demo Video](https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)
--->
+[![DevOps AI Assistant — Demo Video](https://img.youtube.com/vi/pbmYtUhJ1SM/maxresdefault.jpg)](https://youtu.be/pbmYtUhJ1SM)
 
 **[Live App](https://devops-ai-assistant.vercel.app)** · **[API Docs](https://devops-ai-backend.onrender.com/docs)** · **[Architecture](#architecture)**
 
