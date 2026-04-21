@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { capacityAPI, predictionsAPI } from '@/lib/api';
 import {
   colors, pageContainer, pageContent, pageHeader, pageTitle, pageSubtitle,
@@ -50,6 +51,7 @@ export default function CapacityPlanningPage() {
   const [forecasts, setForecasts] = useState<Forecast[]>([]);
   const [trends, setTrends] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => { loadData(); }, []);
 
@@ -95,6 +97,15 @@ export default function CapacityPlanningPage() {
     <div style={pageContainer}>
       <div style={pageContent}>
         <div style={pageHeader}>
+          <button
+            onClick={() => router.back()}
+            style={{
+              background: 'none', border: 'none', color: colors.textMuted, cursor: 'pointer',
+              fontSize: 13, display: 'flex', alignItems: 'center', gap: 6, padding: '4px 0', marginBottom: 12,
+            }}
+          >
+            <span style={{ fontSize: 16 }}>←</span> Back
+          </button>
           <div style={flexBetween}>
             <div>
               <h1 style={pageTitle}>Capacity Planning</h1>

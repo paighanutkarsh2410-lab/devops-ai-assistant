@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { postmortemAPI, incidentsAPI } from '@/lib/api';
 import {
   colors, pageContainer, pageContent, pageHeader, pageTitle, pageSubtitle,
@@ -50,6 +51,7 @@ export default function PostmortemPage() {
   const [loading, setLoading] = useState(false);
   const [loadingIncidents, setLoadingIncidents] = useState(true);
   const [error, setError] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
     incidentsAPI.getAll({ limit: 50 }).then(r => {
@@ -79,6 +81,15 @@ export default function PostmortemPage() {
     <div style={pageContainer}>
       <div style={pageContent}>
         <div style={pageHeader}>
+          <button
+            onClick={() => router.back()}
+            style={{
+              background: 'none', border: 'none', color: colors.textMuted, cursor: 'pointer',
+              fontSize: 13, display: 'flex', alignItems: 'center', gap: 6, padding: '4px 0', marginBottom: 12,
+            }}
+          >
+            <span style={{ fontSize: 16 }}>←</span> Back
+          </button>
           <h1 style={pageTitle}>Post-Incident Review</h1>
           <p style={pageSubtitle}>Generate blameless post-mortem reports with AI-powered analysis</p>
         </div>
@@ -95,8 +106,9 @@ export default function PostmortemPage() {
                 onChange={(e) => setSelectedIncident(e.target.value)}
                 style={{
                   width: '100%', padding: '10px 14px', borderRadius: 8,
-                  border: `1px solid ${colors.border}`, background: colors.bgInput,
+                  border: `1px solid ${colors.border}`, background: '#0a0a14',
                   color: colors.text, fontSize: 14, outline: 'none',
+                  colorScheme: 'dark',
                 }}
               >
                 <option value="">Choose an incident...</option>

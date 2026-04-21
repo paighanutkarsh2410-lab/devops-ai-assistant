@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { logAnalysisAPI, logsAPI } from '@/lib/api';
 import {
   colors, pageContainer, pageContent, pageHeader, pageTitle, pageSubtitle,
@@ -57,6 +58,7 @@ export default function LogAnalysisPage() {
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
   const [hours, setHours] = useState(24);
+  const router = useRouter();
   const [selectedLevel, setSelectedLevel] = useState('');
 
   useEffect(() => {
@@ -106,6 +108,15 @@ export default function LogAnalysisPage() {
     <div style={pageContainer}>
       <div style={pageContent}>
         <div style={pageHeader}>
+          <button
+            onClick={() => router.back()}
+            style={{
+              background: 'none', border: 'none', color: colors.textMuted, cursor: 'pointer',
+              fontSize: 13, display: 'flex', alignItems: 'center', gap: 6, padding: '4px 0', marginBottom: 12,
+            }}
+          >
+            <span style={{ fontSize: 16 }}>←</span> Back
+          </button>
           <div style={flexBetween}>
             <div>
               <h1 style={pageTitle}>Log Analysis</h1>
@@ -115,7 +126,7 @@ export default function LogAnalysisPage() {
               <select
                 value={hours}
                 onChange={(e) => setHours(Number(e.target.value))}
-                style={{ padding: '8px 12px', borderRadius: 8, border: `1px solid ${colors.border}`, background: colors.bgInput, color: colors.text, fontSize: 13 }}
+                style={{ padding: '8px 12px', borderRadius: 8, border: `1px solid ${colors.border}`, background: '#0a0a14', color: colors.text, fontSize: 13, colorScheme: 'dark' }}
               >
                 <option value={1}>Last 1 hour</option>
                 <option value={6}>Last 6 hours</option>
