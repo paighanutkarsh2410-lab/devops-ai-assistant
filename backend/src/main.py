@@ -41,6 +41,7 @@ from routes.feedback import router as feedback_router
 from routes.decision_graph import router as decision_graph_router
 from routes.scenarios import router as scenarios_router
 from routes.confidence import router as confidence_router
+from routes.postmortem import router as postmortem_router
 from websocket.handlers import router as ws_router
 from monitoring.prometheus_exporter import PrometheusMiddleware, metrics_endpoint
 from monitoring.metric_generator import start_metric_generator
@@ -130,6 +131,7 @@ app.include_router(feedback_router)
 app.include_router(decision_graph_router)
 app.include_router(scenarios_router)
 app.include_router(confidence_router)
+app.include_router(postmortem_router)
 app.include_router(ws_router)
 
 # Prometheus metrics endpoint

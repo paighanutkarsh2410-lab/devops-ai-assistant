@@ -10,6 +10,8 @@ from remediation_agent import RemediationAgent
 from learning_agent import LearningAgent
 from prediction_agent import PredictionAgent
 from communication_agent import CommunicationAgent
+from log_analysis_agent import LogAnalysisAgent
+from capacity_planning_agent import CapacityPlanningAgent
 from events import (
     subscribe_events, publish_event,
     ANOMALY_DETECTED, INCIDENT_CREATED, DIAGNOSIS_COMPLETE,
@@ -26,6 +28,8 @@ class AgentOrchestrator:
         self.learning_agent = LearningAgent()
         self.prediction_agent = PredictionAgent()
         self.communication_agent = CommunicationAgent()
+        self.log_analysis_agent = LogAnalysisAgent()
+        self.capacity_planning_agent = CapacityPlanningAgent()
         self._running = False
         self._threads = []
         self._auto_remediation = True
@@ -43,6 +47,8 @@ class AgentOrchestrator:
         self.learning_agent.authenticate()
         self.prediction_agent.authenticate()
         self.communication_agent.authenticate()
+        self.log_analysis_agent.authenticate()
+        self.capacity_planning_agent.authenticate()
 
         # Start Monitor Agent
         monitor_thread = threading.Thread(
@@ -98,6 +104,24 @@ class AgentOrchestrator:
         comm_thread.start()
         self._threads.append(comm_thread)
 
+        # Start Log Analysis Agent (every 2 min)
+        log_thread = threading.Thread(
+            target=self._run_log_analysis,
+            daemon=True,
+            name="LogAnalysisAgent"
+        )
+        log_thread.start()
+        self._threads.append(log_thread)
+
+        # Start Capacity Planning Agent (every 30 min)
+        cap_thread = threading.Thread(
+            target=self._run_capacity_planning,
+            daemon=True,
+            name="CapacityPlanningAgent"
+        )
+        cap_thread.start()
+        self._threads.append(cap_thread)
+
         # Start event listener
         event_thread = threading.Thread(
             target=self._listen_events,
@@ -114,6 +138,8 @@ class AgentOrchestrator:
         print(f"  Learning Agent:    checking every 120s")
         print(f"  Prediction Agent:  checking every 3600s")
         print(f"  Comms Agent:       checking every 300s")
+        print(f"  Log Analysis:      checking every 120s")
+        print(f"  Capacity Planning: checking every 1800s")
         print(f"  Auto-remediation:  {'ENABLED' if self._auto_remediation else 'DISABLED'}")
         print(f"  Event listener:    active")
         print()
@@ -199,6 +225,32 @@ class AgentOrchestrator:
                     pass
             time.sleep(300)
 
+    def _run_log_analysis(self):
+        """Run Log Analysis Agent loop (every 2 min)."""
+        while self._running:
+            try:
+                self.log_analysis_agent.tick()
+            except Exception as e:
+                print(f"[Orchestrator] Log Analysis error: {e}")
+                try:
+                    self.log_analysis_agent.authenticate()
+                except Exception:
+                    pass
+            time.sleep(120)
+
+    def _run_capacity_planning(self):
+        """Run Capacity Planning Agent loop (every 30 min)."""
+        while self._running:
+            try:
+                self.capacity_planning_agent.tick()
+            except Exception as e:
+                print(f"[Orchestrator] Capacity Planning error: {e}")
+                try:
+                    self.capacity_planning_agent.authenticate()
+                except Exception:
+                    pass
+            time.sleep(1800)
+
     def _listen_events(self):
         """Listen for inter-agent events."""
         try:
@@ -256,6 +308,8 @@ class AgentOrchestrator:
         self.learning_agent.stop()
         self.prediction_agent.stop()
         self.communication_agent.stop()
+        self.log_analysis_agent.stop()
+        self.capacity_planning_agent.stop()
 
     def wait(self):
         """Block until interrupted."""

@@ -48,6 +48,9 @@ const NAV_SECTIONS: { title: string; items: NavItem[] }[] = [
       { label: 'Maintenance', path: '/maintenance', icon: '🔧' },
       { label: 'Chaos Testing', path: '/chaos', icon: '💥' },
       { label: 'Scenarios', path: '/scenarios', icon: '🔮' },
+      { label: 'Post-Mortem', path: '/postmortem', icon: '📝' },
+      { label: 'Log Analysis', path: '/log-analysis', icon: '📄' },
+      { label: 'Capacity Planning', path: '/capacity-planning', icon: '📐' },
     ],
   },
   {

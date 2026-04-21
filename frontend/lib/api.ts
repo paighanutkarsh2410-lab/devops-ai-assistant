@@ -439,3 +439,33 @@ export const dbAPI = {
   analysis: () =>
     api.get('/db/analysis'),
 };
+
+// Post-Incident Review API
+export const postmortemAPI = {
+  generate: (incidentId: string) =>
+    api.post(`/postmortem/generate/${incidentId}`),
+  templates: () =>
+    api.get('/postmortem/templates'),
+};
+
+// Log Analysis API
+export const logAnalysisAPI = {
+  analyze: (logs: any[]) =>
+    api.post('/logs/analyze', { logs }),
+  stats: (hours?: number) =>
+    api.get('/logs/stats', { params: { hours } }),
+  analysisHistory: (limit?: number) =>
+    api.get('/logs/analyze/history', { params: { limit } }),
+};
+
+// Capacity Planning API (uses predictions endpoints + custom)
+export const capacityAPI = {
+  overview: () =>
+    api.get('/predictions/capacity'),
+  predictiveAlerts: (params?: { severity?: string; limit?: number }) =>
+    api.get('/alerts/predictive', { params }),
+  forecasts: (params?: { service_name?: string; metric_name?: string }) =>
+    api.get('/predictions/metrics', { params }),
+  trends: (params?: { service_name?: string }) =>
+    api.get('/predictions/trends', { params }),
+};
