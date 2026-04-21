@@ -288,7 +288,7 @@ export default function DashboardShell({ children }: { children: ReactNode }) {
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           style={{
             width: collapsed ? 40 : 36, height: 36,
-            margin: collapsed ? '10px auto 2px' : '10px 10px 2px auto',
+            margin: collapsed ? '10px auto 2px' : '10px auto 2px 10px',
             borderRadius: 10, border: '1px solid rgba(255,255,255,0.05)',
             background: 'rgba(255,255,255,0.02)',
             cursor: 'pointer',
