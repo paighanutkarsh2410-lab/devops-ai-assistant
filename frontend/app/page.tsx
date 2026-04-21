@@ -353,7 +353,7 @@ export default function HomePage() {
   const pipeline = [
     { step: 'Monitor', icon: '📡', color: '#3b82f6' },
     { step: 'Diagnose', icon: '🔬', color: '#8b5cf6' },
-    { step: 'Log Analysis', icon: '📄', color: '#a855f7' },
+    { step: 'Logs', icon: '📄', color: '#a855f7' },
     { step: 'Remediate', icon: '⚡', color: '#f59e0b' },
     { step: 'Learn', icon: '🧠', color: '#10b981' },
     { step: 'Predict', icon: '🔮', color: '#ec4899' },
@@ -559,13 +559,13 @@ export default function HomePage() {
 
       {/* ═══ ANIMATED PIPELINE ═══ */}
       <section style={{
-        padding: '0 24px 100px', maxWidth: 1000, margin: '0 auto',
+        padding: '0 24px 100px', maxWidth: 1200, margin: '0 auto',
         position: 'relative', zIndex: 1,
       }}>
         <div className={mounted ? 'slide-up-d4' : ''} style={{
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          flexWrap: isMobile ? 'wrap' : 'nowrap', gap: isMobile ? 10 : 6,
-          padding: isMobile ? '20px 16px' : '24px 36px', borderRadius: 24,
+          flexWrap: 'wrap', gap: isMobile ? 8 : 4,
+          padding: isMobile ? '20px 16px' : '20px 24px', borderRadius: 24,
           background: 'rgba(255,255,255,0.015)',
           border: '1px solid rgba(255,255,255,0.03)',
           backdropFilter: 'blur(10px)',
@@ -579,15 +579,16 @@ export default function HomePage() {
           }} />
 
           {pipeline.map((p, i) => (
-            <div key={p.step} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div key={p.step} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <div style={{
-                display: 'flex', alignItems: 'center', gap: 10,
-                padding: '12px 22px', borderRadius: 14,
+                display: 'flex', alignItems: 'center', gap: 7,
+                padding: isMobile ? '10px 14px' : '10px 16px', borderRadius: 12,
                 background: `${p.color}08`,
                 border: `1px solid ${p.color}15`,
                 animation: `pulse-subtle 4s ease-in-out ${i * 0.5}s infinite`,
                 transition: 'all 0.3s',
                 position: 'relative', overflow: 'hidden',
+                whiteSpace: 'nowrap' as const,
               }}>
                 {/* Inner glow */}
                 <div style={{
@@ -597,14 +598,14 @@ export default function HomePage() {
                   animation: 'breathe 3s ease-in-out infinite',
                   animationDelay: `${i * 0.3}s`,
                 }} />
-                <span style={{ fontSize: 20, position: 'relative' }}>{p.icon}</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: p.color, position: 'relative' }}>{p.step}</span>
+                <span style={{ fontSize: isMobile ? 16 : 18, position: 'relative' }}>{p.icon}</span>
+                <span style={{ fontSize: isMobile ? 11 : 12, fontWeight: 700, color: p.color, position: 'relative' }}>{p.step}</span>
               </div>
               {i < pipeline.length - 1 && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 3, padding: '0 2px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 2, padding: '0 1px' }}>
                   {[0, 1, 2].map(d => (
                     <div key={d} style={{
-                      width: 4, height: 4, borderRadius: '50%', background: p.color,
+                      width: 3, height: 3, borderRadius: '50%', background: p.color,
                       animation: `flow-dot 1.5s ease-in-out ${i * 0.2 + d * 0.15}s infinite`,
                       boxShadow: `0 0 4px ${p.color}60`,
                     }} />
