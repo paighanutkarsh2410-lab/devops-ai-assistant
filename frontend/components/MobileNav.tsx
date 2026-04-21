@@ -112,13 +112,6 @@ export default function MobileNav() {
           zIndex: 1000,
         }}
       >
-        <button
-          onClick={() => setDrawerOpen(true)}
-          style={{ background: 'none', border: 'none', color: colors.text, fontSize: 22, cursor: 'pointer', padding: 4 }}
-          aria-label="Open navigation menu"
-        >
-          ☰
-        </button>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{
             width: 28, height: 28, borderRadius: 8,
@@ -132,7 +125,19 @@ export default function MobileNav() {
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           }}>DevOps AI</span>
         </div>
-        <div style={{ width: 30 }} />
+        <button
+          onClick={() => setDrawerOpen(true)}
+          style={{
+            background: 'none', border: 'none', cursor: 'pointer', padding: 6,
+            display: 'flex', flexDirection: 'column' as const, gap: 4,
+            alignItems: 'center', justifyContent: 'center',
+          }}
+          aria-label="Open navigation menu"
+        >
+          <span style={{ width: 20, height: 2, borderRadius: 1, background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)' }} />
+          <span style={{ width: 16, height: 2, borderRadius: 1, background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)' }} />
+          <span style={{ width: 20, height: 2, borderRadius: 1, background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)' }} />
+        </button>
       </div>
 
       {/* Drawer overlay */}
