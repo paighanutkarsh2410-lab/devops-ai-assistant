@@ -1,6 +1,6 @@
 # AI-Powered DevOps Assistant
 
-An autonomous infrastructure monitoring and management platform built with 6 AI agents that work together to detect, diagnose, and remediate production issues in real-time.
+An autonomous infrastructure monitoring and management platform built with 8 AI agents that work together to detect, diagnose, and remediate production issues in real-time.
 
 <div align="center">
 
@@ -31,7 +31,7 @@ This platform automates the entire incident lifecycle — from anomaly detection
 - **Natural Language Chat** — Ask questions about your infrastructure in plain English
 - **Real Integrations** — GitHub (commits, deployments, CI status), Slack (webhook notifications)
 - **What-If Simulator** — Test incident response scenarios before they happen
-- **Incident Flow Visualization** — Animated pipeline showing how 6 agents collaborate to resolve issues
+- **Incident Flow Visualization** — Animated pipeline showing how 8 agents collaborate to resolve issues
 
 ### Screenshots
 
@@ -88,8 +88,8 @@ This platform automates the entire incident lifecycle — from anomaly detection
 ### Agent Pipeline
 
 ```
-Monitor → Diagnostic → Remediation → Learning → Prediction → Communication
-  30s        60s          90s          120s       hourly        5min
+Monitor → Diagnostic → Log Analysis → Remediation → Learning → Prediction → Capacity → Communication
+  30s        60s          120s           90s          120s       hourly       30min       5min
 ```
 
 Each agent operates autonomously with its own tick interval and hands off context to the next stage. The pipeline processes incidents end-to-end without manual intervention.
@@ -157,7 +157,7 @@ JWT_SECRET=your_secret_here
 devops-ai-assistant/
 ├── frontend/          # Next.js dashboard (28+ sections)
 ├── backend/           # FastAPI REST API
-├── agents/            # AI agent pipeline (6 agents)
+├── agents/            # AI agent pipeline (8 agents)
 ├── database/          # Schema and migrations
 ├── monitoring/        # Prometheus & Grafana configs
 ├── docs/              # Architecture and API documentation
@@ -182,6 +182,12 @@ Stores incident patterns in Qdrant vector database for similarity search using s
 ### Prediction Agent
 Forecasts metric trends using time-series analysis (Prophet/linear regression). Identifies capacity breaches before they happen and generates proactive alerts with prevention recommendations. Runs **hourly**.
 
+### Log Analysis Agent
+Ingests application logs, detects error patterns using regex matching, clusters related errors, and uses Claude AI for intelligent root cause analysis. Generates actionable recommendations for each error category. Runs every **2 minutes**.
+
+### Capacity Planning Agent
+Tracks resource usage trends (CPU, memory, disk) over days/weeks using linear regression. Predicts when resources will reach warning/critical thresholds and recommends scaling decisions before exhaustion. Runs every **30 minutes**.
+
 ### Communication Agent
 Routes notifications intelligently based on severity and user preferences. Supports Slack (rich messages, thread replies, interactive buttons), email, and browser audio alerts. Anti-spam with dedup, rate limiting, and quiet hours. Runs every **5 minutes**.
 
@@ -192,7 +198,7 @@ Routes notifications intelligently based on severity and user preferences. Suppo
 | **Overview** | Dashboard, Live Metrics, AI Chat |
 | **Monitoring** | System Health, Analytics, Performance, Predictions |
 | **AI Agents** | Agent Status, Intelligence, Decision Graph, Incident Flow, Agent Builder, Marketplace, Learning |
-| **Operations** | Workflows, Runbooks, Maintenance, Chaos Testing, What-If Scenarios |
+| **Operations** | Workflows, Runbooks, Maintenance, Chaos Testing, What-If Scenarios, Post-Mortem Reviews, Log Analysis, Capacity Planning |
 | **Security** | Security Dashboard, Compliance, Audit Log, Disaster Recovery |
 | **Insights** | Reports, Cost Analysis, SLA Tracking, Executive View, Visualizations |
 | **Settings** | Notifications (with audio alert test), Integrations, Theme |

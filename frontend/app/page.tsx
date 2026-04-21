@@ -346,14 +346,18 @@ export default function HomePage() {
     { icon: '🧠', title: 'Neural Learning', desc: 'Vector-based pattern recognition that builds a knowledge base from every resolved incident, getting smarter over time', gradient: 'linear-gradient(135deg, #10b981, #06b6d4)' },
     { icon: '🔮', title: 'Predictive Intelligence', desc: 'Forecast capacity breaches, cost anomalies, and potential failures before they impact your users', gradient: 'linear-gradient(135deg, #ec4899, #8b5cf6)' },
     { icon: '🔔', title: 'Smart Notifications', desc: 'Multi-channel alert routing with intelligent deduplication, escalation policies, and on-call schedule integration', gradient: 'linear-gradient(135deg, #06b6d4, #3b82f6)' },
+    { icon: '📄', title: 'Log Analysis', desc: 'Intelligent log parsing with regex pattern matching, error clustering, and AI-powered root cause insights across all services', gradient: 'linear-gradient(135deg, #a855f7, #6366f1)' },
+    { icon: '📐', title: 'Capacity Planning', desc: 'Resource trend analysis with linear regression, exhaustion prediction, and automated scaling recommendations before limits are hit', gradient: 'linear-gradient(135deg, #14b8a6, #06b6d4)' },
   ];
 
   const pipeline = [
     { step: 'Monitor', icon: '📡', color: '#3b82f6' },
     { step: 'Diagnose', icon: '🔬', color: '#8b5cf6' },
+    { step: 'Log Analysis', icon: '📄', color: '#a855f7' },
     { step: 'Remediate', icon: '⚡', color: '#f59e0b' },
     { step: 'Learn', icon: '🧠', color: '#10b981' },
     { step: 'Predict', icon: '🔮', color: '#ec4899' },
+    { step: 'Capacity', icon: '📐', color: '#14b8a6' },
     { step: 'Notify', icon: '🔔', color: '#06b6d4' },
   ];
 
@@ -502,7 +506,7 @@ export default function HomePage() {
           <p className={mounted ? 'slide-up-d2' : ''} style={{
             fontSize: isMobile ? 14 : 18, color: '#94a3b8', lineHeight: 1.8, marginBottom: isMobile ? 28 : 40,
           }}>
-            6 autonomous AI agents that monitor, diagnose, and remediate
+            8 autonomous AI agents that monitor, diagnose, and remediate
             your infrastructure in real-time.{' '}
             <span style={{ color: '#cbd5e1', fontWeight: 600 }}>Zero human intervention.</span>
           </p>
@@ -619,7 +623,7 @@ export default function HomePage() {
         position: 'relative', zIndex: 1,
       }}>
         {[
-          { value: '6', label: 'AI Agents', icon: '🤖', color: '#3b82f6', suffix: '' },
+          { value: '8', label: 'AI Agents', icon: '🤖', color: '#3b82f6', suffix: '' },
           { value: '30', label: 'Detection Time', icon: '⚡', color: '#f59e0b', suffix: 's', prefix: '<' },
           { value: '95', label: 'Auto-Resolution', icon: '✅', color: '#10b981', suffix: '%+' },
           { value: '24', label: 'Autonomous', icon: '🌐', color: '#8b5cf6', suffix: '/7' },
@@ -668,7 +672,7 @@ export default function HomePage() {
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           }}>CAPABILITIES</p>
           <h2 style={{ fontSize: isMobile ? 30 : 52, fontWeight: 900, letterSpacing: isMobile ? '-1px' : '-2px', marginBottom: 16 }}>
-            Six Agents.{' '}
+            Eight Agents.{' '}
             <span style={{
               background: 'linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899)',
               backgroundSize: '300% auto',
@@ -681,7 +685,7 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: isMobile ? 16 : 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)', gap: isMobile ? 16 : 20 }}>
           {features.map((f, i) => (
             <TiltCard key={i} gradient={f.gradient} delay={0.15 + i * 0.08} index={i}>
               <div style={{
