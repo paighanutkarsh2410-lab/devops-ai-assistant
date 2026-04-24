@@ -113,12 +113,7 @@ export default function MobileNav() {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{
-            width: 28, height: 28, borderRadius: 8,
-            background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 14, boxShadow: '0 0 10px rgba(59,130,246,0.3)',
-          }}>⚡</div>
+          <img src="/logo.svg" alt="DevOps AI" style={{ width: 28, height: 28, filter: 'drop-shadow(0 0 6px rgba(139,92,246,0.4))' }} />
           <span style={{
             fontWeight: 800, fontSize: 15,
             background: 'linear-gradient(135deg, #f0f0f0, #a1a1aa)',
@@ -167,12 +162,7 @@ export default function MobileNav() {
             }}
           >
             <div style={{ padding: '0 16px 16px', borderBottom: `1px solid ${colors.border}`, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{
-                width: 32, height: 32, borderRadius: 9,
-                background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 16, boxShadow: '0 0 12px rgba(59,130,246,0.3)',
-              }}>⚡</div>
+              <img src="/logo.svg" alt="DevOps AI" style={{ width: 32, height: 32, filter: 'drop-shadow(0 0 8px rgba(139,92,246,0.4))' }} />
               <div>
                 <span style={{
                   fontWeight: 800, fontSize: 15, display: 'block', lineHeight: 1,

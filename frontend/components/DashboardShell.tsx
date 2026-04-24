@@ -259,14 +259,15 @@ export default function DashboardShell({ children }: { children: ReactNode }) {
             cursor: 'pointer', minHeight: 60,
           }}
         >
-          <div style={{
-            width: 36, height: 36, borderRadius: 10,
-            background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 18, flexShrink: 0,
-            boxShadow: '0 0 15px rgba(59,130,246,0.3), 0 0 30px rgba(139,92,246,0.1)',
-            animation: mounted ? 'glow-pulse 4s ease-in-out infinite' : 'none',
-          }}>⚡</div>
+          <img
+            src="/logo.svg"
+            alt="DevOps AI"
+            style={{
+              width: 36, height: 36, flexShrink: 0,
+              filter: 'drop-shadow(0 0 8px rgba(139,92,246,0.4))',
+              animation: mounted ? 'glow-pulse 4s ease-in-out infinite' : 'none',
+            }}
+          />
           {!collapsed && (
             <div>
               <span style={{

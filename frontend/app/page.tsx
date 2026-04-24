@@ -408,14 +408,16 @@ export default function HomePage() {
         transition: 'all 0.4s ease',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div style={{
-            width: 44, height: 44, borderRadius: 14, position: 'relative',
-            background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22,
-            boxShadow: '0 0 25px rgba(59,130,246,0.4), 0 0 50px rgba(139,92,246,0.15)',
-            animation: 'glow-pulse 4s ease-in-out infinite',
-          }}>
-            ⚡
+          <div style={{ position: 'relative' }}>
+            <img
+              src="/logo.svg"
+              alt="DevOps AI"
+              style={{
+                width: 44, height: 44,
+                filter: 'drop-shadow(0 0 12px rgba(139,92,246,0.5))',
+                animation: 'glow-pulse 4s ease-in-out infinite',
+              }}
+            />
             <div style={{
               position: 'absolute', inset: -5, borderRadius: 18,
               border: '1px solid rgba(59,130,246,0.25)',

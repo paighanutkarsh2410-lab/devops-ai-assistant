@@ -18,12 +18,12 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "DevOps AI Assistant — Autonomous AI-Powered Infrastructure Management",
-  description: "AI-powered DevOps platform with 6 autonomous agents that monitor, diagnose, and remediate infrastructure issues in real-time. Features predictive analytics, auto-remediation, and intelligent incident management.",
+  description: "AI-powered DevOps platform with 8 autonomous agents that monitor, diagnose, and remediate infrastructure issues in real-time. Features predictive analytics, auto-remediation, and intelligent incident management.",
   keywords: ["DevOps AI Assistant", "autonomous DevOps", "AI infrastructure management", "incident management", "predictive analytics", "auto-remediation", "AI agents DevOps"],
   manifest: "/manifest.json",
   openGraph: {
     title: "DevOps AI Assistant — Autonomous Infrastructure Management",
-    description: "6 autonomous AI agents that monitor, diagnose, and remediate your infrastructure in real-time.",
+    description: "8 autonomous AI agents that monitor, diagnose, and remediate your infrastructure in real-time.",
     url: "https://devops-ai-assistant.online",
     siteName: "DevOps AI Assistant",
     type: "website",
@@ -56,7 +56,8 @@ export default function RootLayout({
     >
       <head>
         <meta name="theme-color" content="#3b82f6" />
-        <link rel="apple-touch-icon" href="/icon-192.svg" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="apple-touch-icon" href="/logo.svg" />
       </head>
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
