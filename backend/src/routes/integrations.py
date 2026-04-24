@@ -295,7 +295,7 @@ def github_create_issue(
 
 
 class SlackTestMessage(BaseModel):
-    message: str = "Test notification from DevOps AI Assistant"
+    message: str = "Test notification from SentryAI"
     webhook_url: str = ""
 
 
@@ -326,7 +326,7 @@ def slack_test_send(
         "blocks": [
             {
                 "type": "header",
-                "text": {"type": "plain_text", "text": "🧪 DevOps AI — Test Notification"},
+                "text": {"type": "plain_text", "text": "🧪 SentryAI — Test Notification"},
             },
             {
                 "type": "section",

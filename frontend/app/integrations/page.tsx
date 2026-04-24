@@ -115,7 +115,7 @@ export default function IntegrationsPage() {
     setSlackSending(true);
     setSlackResult(null);
     try {
-      const res = await api.post('/integrations/slack/test-send', { message: slackTestMsg || 'Test notification from DevOps AI Assistant' });
+      const res = await api.post('/integrations/slack/test-send', { message: slackTestMsg || 'Test notification from SentryAI' });
       setSlackResult(res.data.success ? 'Sent successfully!' : `Failed: ${res.data.error}`);
     } catch {
       setSlackResult('Failed to send');
@@ -327,7 +327,7 @@ export default function IntegrationsPage() {
                   <input
                     value={slackTestMsg}
                     onChange={e => setSlackTestMsg(e.target.value)}
-                    placeholder="Test notification from DevOps AI Assistant"
+                    placeholder="Test notification from SentryAI"
                     style={{ ...inputStyle, fontSize: 13, padding: '8px 12px', width: '100%' }}
                   />
                 </div>

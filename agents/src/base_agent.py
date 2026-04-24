@@ -19,7 +19,7 @@ class BaseAgent:
                 "email": AGENT_EMAIL,
                 "password": AGENT_PASSWORD,
                 "full_name": f"Monitor Agent ({self.name})",
-                "company": "DevOps AI System"
+                "company": "SentryAI System"
             }, timeout=5)
         except Exception:
             pass

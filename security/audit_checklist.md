@@ -1,7 +1,7 @@
 # Security Audit Checklist
 
 Last audited: 2024-01-15
-Auditor: DevOps AI Security Team
+Auditor: SentryAI Security Team
 
 ---
 

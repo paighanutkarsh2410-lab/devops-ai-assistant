@@ -42,7 +42,7 @@ class EndpointHealthPlugin(AgentPlugin):
         return PluginMetadata(
             name="Endpoint Health Monitor",
             version="1.0.0",
-            author="DevOps AI Team",
+            author="SentryAI Team",
             description="Monitors HTTP endpoint response times and availability",
             plugin_type=PluginType.DATA_SOURCE,
             capabilities=["http_monitoring", "latency_check", "availability_check"],

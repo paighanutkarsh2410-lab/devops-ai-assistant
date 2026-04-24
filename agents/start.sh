@@ -12,7 +12,7 @@ if [ -f .env ]; then
     export $(grep -v '^#' .env | xargs)
 fi
 
-echo "Starting DevOps AI Agent Orchestrator..."
+echo "Starting SentryAI Agent Orchestrator..."
 echo "  Backend URL: ${BACKEND_URL:-http://localhost:8000}"
 echo "  Redis URL:   ${REDIS_URL:-redis://localhost:6379}"
 echo "  Log Level:   ${LOG_LEVEL:-INFO}"

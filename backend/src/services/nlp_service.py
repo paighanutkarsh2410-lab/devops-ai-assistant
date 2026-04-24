@@ -378,7 +378,7 @@ class NLPQueryHandler:
 
         try:
             system_prompt = (
-                "You are a DevOps AI assistant. Answer the user's question based on "
+                "You are SentryAI, a DevOps assistant. Answer the user's question based on "
                 "the provided system data. Be conversational, concise, and helpful. "
                 "If data shows issues, highlight them clearly. Use bullet points for lists. "
                 "If you don't have enough data, say so honestly."

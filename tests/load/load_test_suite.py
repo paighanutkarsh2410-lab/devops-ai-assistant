@@ -1,5 +1,5 @@
 """
-Load Testing Suite: Comprehensive performance benchmarking for the DevOps AI Assistant.
+Load Testing Suite: Comprehensive performance benchmarking for SentryAI.
 Wraps k6 scenarios and analyzes results against defined performance baselines.
 """
 import json

@@ -80,5 +80,5 @@ h2. Description
 h2. Root Cause
 {incident.get('root_cause', 'Under investigation')}
 
-_Auto-created by DevOps AI Assistant_
+_Auto-created by SentryAI_
 """

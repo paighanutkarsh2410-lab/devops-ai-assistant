@@ -2,7 +2,7 @@
 
 ## Overview
 
-Load testing ensures the DevOps AI Assistant can handle production-scale traffic. We use **k6** for HTTP load testing and a Python analysis layer for benchmark comparison and regression detection.
+Load testing ensures the SentryAI can handle production-scale traffic. We use **k6** for HTTP load testing and a Python analysis layer for benchmark comparison and regression detection.
 
 ## Prerequisites
 

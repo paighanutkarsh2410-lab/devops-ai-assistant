@@ -57,7 +57,7 @@ logging.basicConfig(
 )
 
 app = FastAPI(
-    title="DevOps AI Assistant API",
+    title="SentryAI API",
     version="1.0.0",
     description="Autonomous infrastructure monitoring and management system with AI agents",
 )
@@ -156,7 +156,7 @@ async def startup():
 @app.get("/")
 def read_root():
     return {
-        "message": "DevOps AI Assistant API",
+        "message": "SentryAI API",
         "status": "running",
         "version": "1.0.0",
     }

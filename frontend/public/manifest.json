@@ -1,7 +1,7 @@
 {
-  "name": "DevOps AI Assistant",
-  "short_name": "DevOps AI",
-  "description": "Autonomous AI-powered infrastructure monitoring and management platform with 6 AI agents",
+  "name": "SentryAI",
+  "short_name": "SentryAI",
+  "description": "Autonomous AI-powered infrastructure monitoring and management platform with 8 AI agents",
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#030308",

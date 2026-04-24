@@ -17,7 +17,7 @@ export default function ChatPage() {
         <div className="slide-up" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <h1 style={{ fontSize: isMobile ? 20 : 26, fontWeight: 800, margin: 0, background: 'linear-gradient(135deg, #f0f0f0, #06b6d4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              DevOps AI Chat
+              SentryAI Chat
             </h1>
             <span style={{
               fontSize: 12,

@@ -164,7 +164,7 @@ export default function ChatInterface() {
       }}>
         {messages.length === 0 && (
           <div style={{ textAlign: 'center', color: '#9ca3af', padding: '40px 0' }}>
-            <h3 style={{ fontSize: '18px', marginBottom: '8px' }}>DevOps AI Assistant</h3>
+            <h3 style={{ fontSize: '18px', marginBottom: '8px' }}>SentryAI Assistant</h3>
             <p style={{ fontSize: '14px', marginBottom: '20px' }}>
               Ask me anything about your infrastructure — try natural language queries like &quot;show critical incidents&quot; or &quot;why is the API slow?&quot;
             </p>

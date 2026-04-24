@@ -1,5 +1,5 @@
 /**
- * Design System — Consistent tokens for the DevOps AI Assistant UI.
+ * Design System — Consistent tokens for the SentryAI UI.
  */
 
 export const colors = {

@@ -1,5 +1,5 @@
 """
-DevOps AI Agent Orchestrator - Main entry point.
+SentryAI Agent Orchestrator - Main entry point.
 Starts all three agents: Monitor, Diagnostic, Remediation.
 """
 import sys
@@ -22,7 +22,7 @@ logging.basicConfig(
 
 
 def main():
-    parser = argparse.ArgumentParser(description="DevOps AI Agent Orchestrator")
+    parser = argparse.ArgumentParser(description="SentryAI Agent Orchestrator")
     parser.add_argument("--dry-run", action="store_true",
                         help="Run in dry-run mode (no real actions)")
     parser.add_argument("--no-remediation", action="store_true",
@@ -30,7 +30,7 @@ def main():
     args = parser.parse_args()
 
     print("=" * 50)
-    print("  DevOps AI Agent Orchestrator")
+    print("  SentryAI Agent Orchestrator")
     print("  Agents: Monitor | Diagnostic | Remediation")
     if args.dry_run:
         print("  Mode: DRY RUN")

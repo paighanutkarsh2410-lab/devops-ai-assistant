@@ -6,7 +6,7 @@ Risk score: 5/100
 
 ## Summary
 
-The DevOps AI Assistant has undergone a comprehensive security audit. All critical and high-severity findings have been remediated. The application uses industry-standard security practices including:
+The SentryAI has undergone a comprehensive security audit. All critical and high-severity findings have been remediated. The application uses industry-standard security practices including:
 
 - **Authentication**: bcrypt password hashing, JWT with expiration, rate limiting
 - **Authorization**: Per-user data scoping via user_id filtering on all queries

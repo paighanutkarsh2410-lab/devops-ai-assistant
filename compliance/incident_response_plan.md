@@ -2,7 +2,7 @@
 
 ## Overview
 
-This plan outlines the procedures for detecting, containing, eradicating, and recovering from security incidents affecting the DevOps AI Assistant platform.
+This plan outlines the procedures for detecting, containing, eradicating, and recovering from security incidents affecting the SentryAI platform.
 
 ## Severity Levels
 

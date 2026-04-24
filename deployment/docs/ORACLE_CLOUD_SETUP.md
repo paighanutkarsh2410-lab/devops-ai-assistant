@@ -2,7 +2,7 @@
 
 ## Overview
 
-Deploy the DevOps AI Assistant on Oracle Cloud Free Tier (Always Free).
+Deploy SentryAI on Oracle Cloud Free Tier (Always Free).
 
 ## VM Setup
 

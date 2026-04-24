@@ -36,7 +36,7 @@ def seed():
         cur.execute("""
             INSERT INTO users (id, email, hashed_password, full_name, company, is_active, created_at)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
-        """, (user_id, 'aidevops@demo.com', hashed, 'Admin', 'DevOps AI', True, NOW))
+        """, (user_id, 'aidevops@demo.com', hashed, 'Admin', 'SentryAI', True, NOW))
         print(f"Created demo user: aidevops@demo.com / har@2410")
 
     # ── 2. Clear existing seed data ─────────────────────────

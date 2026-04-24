@@ -1,12 +1,12 @@
-# AI-Powered DevOps Assistant
+# SentryAI
 
 An autonomous infrastructure monitoring and management platform built with 8 AI agents that work together to detect, diagnose, and remediate production issues in real-time.
 
 <div align="center">
 
-### Introducing DevOps AI Assistant
+### Introducing SentryAI
 
-[![DevOps AI Assistant — Promo Video](https://img.youtube.com/vi/pbmYtUhJ1SM/maxresdefault.jpg)](https://youtu.be/pbmYtUhJ1SM)
+[![SentryAI — Promo Video](https://img.youtube.com/vi/pbmYtUhJ1SM/maxresdefault.jpg)](https://youtu.be/pbmYtUhJ1SM)
 
 *Click to watch the promotional video*
 

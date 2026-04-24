@@ -2,7 +2,7 @@
 
 ## Overview
 
-This plan ensures the DevOps AI Assistant platform can recover from catastrophic failures with minimal data loss and downtime. It covers backup strategies, failover procedures, and recovery testing.
+This plan ensures the SentryAI platform can recover from catastrophic failures with minimal data loss and downtime. It covers backup strategies, failover procedures, and recovery testing.
 
 ## Recovery Objectives
 

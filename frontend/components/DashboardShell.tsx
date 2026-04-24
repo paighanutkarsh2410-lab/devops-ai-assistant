@@ -261,7 +261,7 @@ export default function DashboardShell({ children }: { children: ReactNode }) {
         >
           <img
             src="/logo.svg"
-            alt="DevOps AI"
+            alt="SentryAI"
             style={{
               width: 36, height: 36, flexShrink: 0,
               filter: 'drop-shadow(0 0 8px rgba(139,92,246,0.4))',
@@ -274,11 +274,11 @@ export default function DashboardShell({ children }: { children: ReactNode }) {
                 fontSize: 16, fontWeight: 800, display: 'block', lineHeight: 1,
                 background: 'linear-gradient(135deg, #f0f0f0, #a1a1aa)',
                 WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-              }}>DevOps AI</span>
+              }}>SentryAI</span>
               <span style={{
                 fontSize: 9, fontWeight: 700, color: '#3b82f680',
                 letterSpacing: 2, textTransform: 'uppercase' as const,
-              }}>ASSISTANT</span>
+              }}>PLATFORM</span>
             </div>
           )}
         </div>

@@ -411,7 +411,7 @@ export default function HomePage() {
           <div style={{ position: 'relative' }}>
             <img
               src="/logo.svg"
-              alt="DevOps AI"
+              alt="SentryAI"
               style={{
                 width: 44, height: 44,
                 filter: 'drop-shadow(0 0 12px rgba(139,92,246,0.5))',
@@ -426,8 +426,7 @@ export default function HomePage() {
           </div>
           <div>
             <span style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.5px', display: 'block', lineHeight: 1 }}>
-              DevOps{' '}
-              <span style={{
+              Sentry<span style={{
                 background: 'linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899)',
                 backgroundSize: '200% auto',
                 WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',

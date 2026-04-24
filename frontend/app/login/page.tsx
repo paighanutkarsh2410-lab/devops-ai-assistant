@@ -158,7 +158,7 @@ export default function LoginPage() {
             {isLogin ? 'Welcome back' : 'Get started'}
           </h1>
           <p style={{ fontSize: 15, color: '#3f3f46' }}>
-            {isLogin ? 'Sign in to your DevOps AI dashboard' : 'Create your account to begin'}
+            {isLogin ? 'Sign in to your SentryAI dashboard' : 'Create your account to begin'}
           </p>
         </div>
 

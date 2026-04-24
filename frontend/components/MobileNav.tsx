@@ -113,12 +113,12 @@ export default function MobileNav() {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <img src="/logo.svg" alt="DevOps AI" style={{ width: 28, height: 28, filter: 'drop-shadow(0 0 6px rgba(139,92,246,0.4))' }} />
+          <img src="/logo.svg" alt="SentryAI" style={{ width: 28, height: 28, filter: 'drop-shadow(0 0 6px rgba(139,92,246,0.4))' }} />
           <span style={{
             fontWeight: 800, fontSize: 15,
             background: 'linear-gradient(135deg, #f0f0f0, #a1a1aa)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-          }}>DevOps AI</span>
+          }}>SentryAI</span>
         </div>
         <div
           onClick={() => setDrawerOpen(true)}
@@ -162,14 +162,14 @@ export default function MobileNav() {
             }}
           >
             <div style={{ padding: '0 16px 16px', borderBottom: `1px solid ${colors.border}`, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 10 }}>
-              <img src="/logo.svg" alt="DevOps AI" style={{ width: 32, height: 32, filter: 'drop-shadow(0 0 8px rgba(139,92,246,0.4))' }} />
+              <img src="/logo.svg" alt="SentryAI" style={{ width: 32, height: 32, filter: 'drop-shadow(0 0 8px rgba(139,92,246,0.4))' }} />
               <div>
                 <span style={{
                   fontWeight: 800, fontSize: 15, display: 'block', lineHeight: 1,
                   background: 'linear-gradient(135deg, #f0f0f0, #a1a1aa)',
                   WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                }}>DevOps AI</span>
-                <span style={{ fontSize: 8, fontWeight: 700, color: '#3b82f680', letterSpacing: 2, textTransform: 'uppercase' as const }}>ASSISTANT</span>
+                }}>SentryAI</span>
+                <span style={{ fontSize: 8, fontWeight: 700, color: '#3b82f680', letterSpacing: 2, textTransform: 'uppercase' as const }}>PLATFORM</span>
               </div>
             </div>
 

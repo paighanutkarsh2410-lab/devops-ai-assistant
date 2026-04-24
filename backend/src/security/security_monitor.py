@@ -1,6 +1,6 @@
 """
 Security Monitoring & Alerting: Real-time threat detection, WAF simulation,
-and security event correlation for the DevOps AI Assistant.
+and security event correlation for SentryAI.
 """
 import logging
 import re

@@ -1,6 +1,6 @@
 # Learning Agent
 
-The Learning Agent makes the DevOps AI system smarter over time by learning from every resolved incident.
+The Learning Agent makes the SentryAI system smarter over time by learning from every resolved incident.
 
 ## Architecture
 

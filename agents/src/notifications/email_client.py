@@ -10,7 +10,7 @@ from typing import Dict, Any, List, Optional
 logger = logging.getLogger(__name__)
 
 RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
-FROM_EMAIL = os.getenv("FROM_EMAIL", "DevOps AI <alerts@devops-ai.system>")
+FROM_EMAIL = os.getenv("FROM_EMAIL", "SentryAI <alerts@sentryai.system>")
 
 try:
     import resend
@@ -177,7 +177,7 @@ class EmailNotifier:
                 </div>
             </div>
             <p style="color:#9ca3af;font-size:12px;text-align:center;margin-top:16px">
-                DevOps AI Assistant — Automated Incident Notification
+                SentryAI — Automated Incident Notification
             </p>
         </div>
         """
@@ -224,7 +224,7 @@ class EmailNotifier:
                 <p style="color:#6b7280;margin-top:16px">Predictions: {d['predictions']} alerts, {d['prevented']} prevented</p>
             </div>
             <p style="color:#9ca3af;font-size:12px;text-align:center;margin-top:16px">
-                DevOps AI Assistant — Weekly Digest
+                SentryAI — Weekly Digest
             </p>
         </div>
         """

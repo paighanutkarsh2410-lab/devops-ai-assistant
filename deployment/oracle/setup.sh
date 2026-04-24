@@ -5,7 +5,7 @@
 # ============================================
 set -e
 
-echo "=== DevOps AI Assistant - Server Setup ==="
+echo "=== SentryAI - Server Setup ==="
 
 # Update system
 echo "[1/6] Updating system packages..."

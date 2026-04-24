@@ -17,15 +17,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DevOps AI Assistant — Autonomous AI-Powered Infrastructure Management",
+  title: "SentryAI — Autonomous AI-Powered Infrastructure Management",
   description: "AI-powered DevOps platform with 8 autonomous agents that monitor, diagnose, and remediate infrastructure issues in real-time. Features predictive analytics, auto-remediation, and intelligent incident management.",
-  keywords: ["DevOps AI Assistant", "autonomous DevOps", "AI infrastructure management", "incident management", "predictive analytics", "auto-remediation", "AI agents DevOps"],
+  keywords: ["SentryAI", "autonomous DevOps", "AI infrastructure management", "incident management", "predictive analytics", "auto-remediation", "AI agents DevOps"],
   manifest: "/manifest.json",
   openGraph: {
-    title: "DevOps AI Assistant — Autonomous Infrastructure Management",
+    title: "SentryAI — Autonomous Infrastructure Management",
     description: "8 autonomous AI agents that monitor, diagnose, and remediate your infrastructure in real-time.",
     url: "https://devops-ai-assistant.online",
-    siteName: "DevOps AI Assistant",
+    siteName: "SentryAI",
     type: "website",
   },
   verification: {
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     "mobile-web-app-capable": "yes",
     "apple-mobile-web-app-capable": "yes",
     "apple-mobile-web-app-status-bar-style": "black-translucent",
-    "apple-mobile-web-app-title": "DevOps AI",
+    "apple-mobile-web-app-title": "SentryAI",
   },
 };
 
