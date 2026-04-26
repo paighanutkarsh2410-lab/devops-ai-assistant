@@ -21,10 +21,14 @@ export const metadata: Metadata = {
   description: "AI-powered DevOps platform with 8 autonomous agents that monitor, diagnose, and remediate infrastructure issues in real-time. Features predictive analytics, auto-remediation, and intelligent incident management.",
   keywords: ["SentryAI", "autonomous DevOps", "AI infrastructure management", "incident management", "predictive analytics", "auto-remediation", "AI agents DevOps"],
   manifest: "/manifest.json",
+  metadataBase: new URL("https://sentryai.online"),
+  alternates: {
+    canonical: "https://sentryai.online",
+  },
   openGraph: {
     title: "SentryAI — Autonomous Infrastructure Management",
     description: "8 autonomous AI agents that monitor, diagnose, and remediate your infrastructure in real-time.",
-    url: "https://devops-ai-assistant.online",
+    url: "https://sentryai.online",
     siteName: "SentryAI",
     type: "website",
   },
